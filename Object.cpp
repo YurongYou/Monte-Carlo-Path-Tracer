@@ -28,8 +28,6 @@ VecF Sphere::getNormal(VecF &pos) {
 int Plane::intersect(const Ray &ray, float &dist) {
     float d = normal.dot(ray.getDirection());
     if (d != 0) {
-//        float L = normal.dot(ray.getOrigin() - base_point);
-//        if (d * L > 0) return MISS;
         float dist_to_plane = normal.dot(ray.getOrigin()) - shift;
         if (-dist_to_plane / d > 0){
             dist = -dist_to_plane / d;

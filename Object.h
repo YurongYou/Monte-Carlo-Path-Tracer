@@ -14,11 +14,13 @@ using std::string;
 
 class Material{
 public:
-    Material(): color(Color((char)255, (char)255, (char)255)), reflection(0.0f),
+    Material(): color(WHITE), reflection(0.0f),
                 diffusion(0.2f) {}
 
     Material(const Color &color, float reflection, float diffusion) : color(color), reflection(reflection),
                                                                       diffusion(diffusion) {}
+    Material(const Color &color): color(color), reflection(0.0f),
+                                  diffusion(0.2f) {}
 
     const Color &getColor() const {
         return color;

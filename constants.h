@@ -13,4 +13,6 @@
 #define MISS	 0		// Ray missed primitive
 #define INPRIM	-1		// Ray started inside primitive
 
+#define INFDIST  1000000.0f
+
 #endif //RAYTRACING_CONSTANTS_H

@@ -29,7 +29,7 @@ public:
 
     // operators
     Vector<T> operator * (const T &c) const { return Vector<T>(c * x, c * y, c * z); }
-    Vector<T> operator / (const T &c) const { return Vector<T>(c / x, c / y, c / z); }
+    Vector<T> operator / (const T &c) const { return Vector<T>(x / c, y / c, z / c); }
     Vector<T> operator * (const Vector<T> &v) const { return Vector<T>(x * v.x, y * v.y, z * v.z); }
     Vector<T> operator - (const Vector<T> &v) const { return Vector<T>(x - v.x, y - v.y, z - v.z); }
     Vector<T> operator + (const Vector<T> &v) const { return Vector<T>(x + v.x, y + v.y, z + v.z); }
@@ -55,5 +55,11 @@ public:
 
 typedef Vector<float> VecF;
 // RGB color
-typedef Vector<char> Color;
+typedef Vector<float> Color;
+
+#define WHITE   Color(1.0f, 1.0f, 1.0f)
+#define GRAY    Color(0.6f, 0.6f, 0.6f)
+#define RED     Color(0.8f, 0.0f, 0.0f)
+#define BLUE    Color(0.0f, 0.5f, 1.0f)
+
 #endif //RAYTRACING_UTILITIES_H
