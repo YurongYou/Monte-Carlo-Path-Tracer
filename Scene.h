@@ -6,27 +6,21 @@
 #define RAYTRACING_SCENE_H
 
 
+#include <list>
 #include "Object.h"
+
+typedef std::list<const Object*> ObjectList;
 
 class Scene {
 public:
-    Scene(): num_objects(0), objects(NULL){}
-    ~Scene(){
-        delete[] objects;
-    }
     void initScene();
-
-    int getNum_objects() const {
-        return num_objects;
-    }
-
-    Object* getObjects(int idx) const {
-        return objects[idx];
+    const ObjectList &getObejct_list() const {
+        return object_list;
     }
 
 private:
-    int num_objects;
-    Object** objects;
+    ObjectList object_list;
+
 };
 
 

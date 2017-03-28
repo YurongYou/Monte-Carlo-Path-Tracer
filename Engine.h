@@ -14,7 +14,7 @@ public:
 
     ~Engine();
 
-    Object *rayTrace(const Ray &ray, Color &color, int depth);
+    const Object* rayTrace(const Ray &ray, Color &color, const float& r_index, int depth);
 
     void render();
 

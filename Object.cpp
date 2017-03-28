@@ -3,9 +3,10 @@
 //
 
 #include "Object.h"
-#include "constants.h"
+#include "common.h"
+#include <iostream>
 
-int Sphere::intersect(const Ray &ray, float &dist) {
+int Sphere::intersect(const Ray &ray, float &dist) const {
     VecF L = center - ray.getOrigin();
     float b = L.dot(ray.getDirection());
     // project to the ray
@@ -21,11 +22,11 @@ int Sphere::intersect(const Ray &ray, float &dist) {
     return MISS;
 }
 
-VecF Sphere::getNormal(VecF &pos) {
+VecF Sphere::getNormal(VecF &pos) const {
     return (pos - center) / radius;
 }
 
-int Plane::intersect(const Ray &ray, float &dist) {
+int Plane::intersect(const Ray &ray, float &dist) const {
     float d = normal.dot(ray.getDirection());
     if (d != 0) {
         float dist_to_plane = normal.dot(ray.getOrigin()) - shift;
@@ -37,6 +38,6 @@ int Plane::intersect(const Ray &ray, float &dist) {
     return MISS;
 }
 
-VecF Plane::getNormal(VecF &pos) {
+VecF Plane::getNormal(VecF &pos) const {
     return normal;
 }

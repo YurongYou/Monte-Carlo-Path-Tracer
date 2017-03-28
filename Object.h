@@ -10,17 +10,12 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+
 using std::string;
 
-class Material{
+class Material {
 public:
-    Material(): color(WHITE), reflection(0.0f),
-                diffusion(0.2f) {}
-
-    Material(const Color &color, float reflection, float diffusion) : color(color), reflection(reflection),
-                                                                      diffusion(diffusion) {}
-    Material(const Color &color): color(color), reflection(0.0f),
-                                  diffusion(0.2f) {}
+    Material() : color(WHITE), reflection(0.0f), diffusion(0.2f), specular(0.5f), refraction(0),refraction_index(1.5f) {}
 
     const Color &getColor() const {
         return color;
@@ -38,34 +33,74 @@ public:
         Material::reflection = reflection;
     }
 
-    float getDifussion() const {
+    float getDiffusion() const {
         return diffusion;
     }
 
-    void setDifussion(float difussion) {
-        Material::diffusion = difussion;
+    void setDiffusion(float diffusion) {
+        Material::diffusion = diffusion;
+    }
+
+    float getSpecular() const {
+        return specular;
+    }
+
+    void setSpecular(float specular) {
+        Material::specular = specular;
+    }
+
+    float getRefraction() const {
+        return refraction;
+    }
+
+    void setRefraction(float refraction) {
+        Material::refraction = refraction;
+    }
+
+    float getRefraction_index() const {
+        return refraction_index;
+    }
+
+    void setRefraction_index(float refraction_index) {
+        Material::refraction_index = refraction_index;
     }
 
 private:
     Color color;
     float reflection;
     float diffusion;
+    float specular;
+    float refraction;
+    float refraction_index;
 };
 
 // simple isotropic objects
 class Object {
 public:
     Object(const Material &material, const string &name, bool light) : material(material), name(name), light(light) {}
+
     Object() {}
 
-    virtual int intersect(const Ray &ray, float &dist) = 0;
-    virtual VecF getNormal(VecF &pos) = 0;
-    virtual Color getColor(VecF &) { return material.getColor(); }
+    virtual int intersect(const Ray &ray, float &dist) const {
+        return MISS;
+    };
+
+    virtual VecF getNormal(VecF &pos) const {
+        return VecF();
+    };
+
+    virtual Color getColor(VecF &) const { return material.getColor(); }
+
     bool isLight() const { return light; }
+
     const string &getName() const { return name; }
+
     void setName(const string &name) { Object::name = name; }
+
     const Material &getMaterial() const { return material; }
+
     void setMaterial(const Material &material) { Object::material = material; }
+
     void setLight(bool light) { Object::light = light; }
 
 protected:
@@ -74,7 +109,7 @@ protected:
     bool light;
 };
 
-class Sphere: public Object{
+class Sphere : public Object {
 public:
     Sphere(const Material &material, const string &name, bool light, const VecF &center, float radius) : Object(
             material, name, light), center(center), radius(radius), radius2(radius * radius) {}
@@ -87,9 +122,9 @@ public:
         return radius;
     }
 
-    int intersect(const Ray &ray, float &dist) override;
+    int intersect(const Ray &ray, float &dist) const override;
 
-    VecF getNormal(VecF &pos) override;
+    VecF getNormal(VecF &pos) const override;
 
     float getRadius2() const {
         return radius2;
@@ -100,14 +135,14 @@ private:
     float radius, radius2;
 };
 
-class Plane: public Object{
+class Plane : public Object {
 public:
     Plane(const Material &material, const string &name, bool light, const VecF &normal, const float &shift) : Object(
             material, name, light), normal(normal), shift(shift) {}
 
-    int intersect(const Ray &ray, float &dist) override;
+    int intersect(const Ray &ray, float &dist) const override;
 
-    VecF getNormal(VecF &pos) override;
+    VecF getNormal(VecF &pos) const override;
 
 private:
     VecF normal;

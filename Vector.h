@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include "constants.h"
+#include "common.h"
 
 template <class T>
 class Vector {
@@ -38,7 +38,6 @@ public:
     Vector<T>& operator *= (const Vector<T> &v) { x *= v.x, y *= v.y, z *= v.z; return *this; }
     Vector<T>& operator *= (const T &c) { x *= c, y *= c, z *= c; return *this; }
     Vector<T>& operator /= (const T &c) { x /= c, y /= c, z /= c; return *this; }
-//    Vector<T>& operator = (const Vector<T> &v) { x = v.x, y = v.y, z = v.z; return *this; }
     Vector<T> operator - () const { return Vector<T>(-x, -y, -z); }
     friend Vector<T> operator * ( T f, const Vector<T>& v ) { return Vector<T>( v.x * f, v.y * f, v.z * f ); }
 
@@ -61,5 +60,6 @@ typedef Vector<float> Color;
 #define GRAY    Color(0.6f, 0.6f, 0.6f)
 #define RED     Color(0.8f, 0.0f, 0.0f)
 #define BLUE    Color(0.0f, 0.5f, 1.0f)
+#define GREEN   Color(0.0f, 1.0f, 0.5f)
 
 #endif //RAYTRACING_UTILITIES_H

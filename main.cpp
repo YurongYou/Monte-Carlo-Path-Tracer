@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Vector.h"
-#include "constants.h"
+#include "common.h"
 #include "Object.h"
 #include "Ray.h"
 #include "Engine.h"
@@ -14,5 +14,5 @@ int main() {
 //    Plane p = Plane(Material(), "new", false, VecF(0, 0, 1), 0);
 //    cout << p.intersect(Ray(-VecF(0, 1, 1), -VecF(1, 0, -1)), dist) << ", dist: " << dist;
 //    return 0;
-    Engine(640, 480, -4, 3, 4, -3).render();
+    Engine(640, 480, -8, 6, 8, -6).render();
 }
