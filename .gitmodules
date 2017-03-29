@@ -1,0 +1,3 @@
+[submodule "vendor/concurrentqueue"]
+	path = vendor/concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git

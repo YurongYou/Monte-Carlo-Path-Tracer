@@ -38,6 +38,12 @@ public:
     Vector<T>& operator *= (const Vector<T> &v) { x *= v.x, y *= v.y, z *= v.z; return *this; }
     Vector<T>& operator *= (const T &c) { x *= c, y *= c, z *= c; return *this; }
     Vector<T>& operator /= (const T &c) { x /= c, y /= c, z /= c; return *this; }
+    Vector<T>& exp() {
+        x = expf(x);
+        y = expf(y);
+        x = expf(z);
+        return *this;
+    }
     Vector<T> operator - () const { return Vector<T>(-x, -y, -z); }
     friend Vector<T> operator * ( T f, const Vector<T>& v ) { return Vector<T>( v.x * f, v.y * f, v.z * f ); }
 

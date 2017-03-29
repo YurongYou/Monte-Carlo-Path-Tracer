@@ -15,7 +15,7 @@ using std::string;
 
 class Material {
 public:
-    Material() : color(WHITE), reflection(0.0f), diffusion(0.2f), specular(0.5f), refraction(0),refraction_index(1.5f) {}
+    Material() : color(WHITE), reflection(0.0f), diffusion(0.2f), specular(0.5f), refraction(0.0f), refraction_index(1.0f) {}
 
     const Color &getColor() const {
         return color;
@@ -65,6 +65,14 @@ public:
         Material::refraction_index = refraction_index;
     }
 
+    void clear(){
+        color = WHITE;
+        reflection = 0.0f;
+        diffusion = 0.2f;
+        specular = 0.5f;
+        refraction = 0.0f;
+        refraction_index = 1.0f;
+    }
 private:
     Color color;
     float reflection;
