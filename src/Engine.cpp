@@ -156,7 +156,7 @@ void Engine::render() {
             }
 
             ++count;
-            cout << "status: " << count << " / " << total << ", " << (float)count / total << "\n";
+//            cout << "status: " << count << " / " << total << ", " << (float)count / total << "\n";
         }
     }
     std::ofstream ofs("./render_image.ppm", std::ios::out | std::ios::binary);

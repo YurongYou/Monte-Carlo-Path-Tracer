@@ -3,5 +3,6 @@ project(RayTracing)
 set(CMAKE_CXX_FLAGS "-O3")
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp Vector.h common.h Ray.h Object.h Object.cpp Scene.cpp Scene.h Engine.cpp Engine.h)
+include_directories(vendor/concurrentqueue)
+set(SOURCE_FILES src/main.cpp src/Vector.h src/common.h src/Ray.h src/Object.h src/Object.cpp src/Scene.cpp src/Scene.h src/Engine.cpp src/Engine.h)
 add_executable(RayTracing ${SOURCE_FILES})
