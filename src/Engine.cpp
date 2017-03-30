@@ -6,6 +6,10 @@
 #include <cassert>
 #include "Engine.h"
 #include "Ray.h"
+#include <atomic>
+#include <vector>
+#include <queue>
+#include "concurrentqueue.h"
 
 using namespace std;
 
@@ -21,31 +25,28 @@ Engine::~Engine() {
     delete scene;
 }
 
-const Object* Engine::rayTrace(const Ray &ray, Color &color, float& dist, const float& r_index, int depth) {
-    if (depth > TRACEDEPTH) return NULL;
-    float min_dist = INFDIST;
-    int result = 1;
-    int temp_result;
+Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const int& depth) {
+    TraceResult trace_rst = {.color = Color(0), .hit_object = NULL};
+    if (depth > TRACEDEPTH) return trace_rst;
+    IntersectResult min_dist_result = {.dist = INFDIST, .result = MISS};
     VecF hit_point;
     const ObjectList& obj_list = scene->getObejct_list();
-    const Object* hit_object = NULL;
 
     for (ObjectList::const_iterator iter = obj_list.begin(); iter != obj_list.end(); ++iter){
-            temp_result = (*iter)->intersect(ray, dist);
-            if (temp_result) {
-                if (dist < min_dist) {
-                    min_dist = dist;
-                    result = temp_result;
-                    hit_object = (*iter);
+            IntersectResult temp_result = (*iter)->intersect(ray);
+            if (temp_result.result != MISS) {
+                if (temp_result.dist < min_dist_result.dist) {
+                    min_dist_result = temp_result;
+                    trace_rst.hit_object = (*iter);
                 }
             }
     }
-
-    if (!hit_object) return NULL;
-    hit_point = ray.getOrigin() + ray.getDirection() * min_dist;
-    if (hit_object->isLight()) {
-        color = hit_object->getColor(hit_point);
+    if (!trace_rst.hit_object) return trace_rst;
+    hit_point = ray.getOrigin() + ray.getDirection() * min_dist_result.dist;
+    if (trace_rst.hit_object->isLight()) {
+        trace_rst.color = trace_rst.hit_object->getColor(hit_point);
     } else {
+        VecF N = trace_rst.hit_object->getNormal(hit_point);
         for (ObjectList::const_iterator iter = obj_list.begin(); iter != obj_list.end(); ++iter) {
             const Object* temp_obj = (*iter);
             if (temp_obj->isLight()) {
@@ -53,112 +54,71 @@ const Object* Engine::rayTrace(const Ray &ray, Color &color, float& dist, const 
                 if (point_light) {
                     float shade = 1.0f;
                     VecF L = point_light->getCenter() - hit_point;
-                    float t_dist = L.length();
-                    float origin_dist = t_dist;
+                    float origin_dist = L.length();
                     L.normalize();
                     // check if there are other surfaces blocking the light
-                    Ray r = Ray(hit_point + L * EPSILON, L);
+                    Ray r = Ray(hit_point + L * EPSILON , L);
                     for (ObjectList::const_iterator iter2 = obj_list.begin(); iter2 != obj_list.end(); ++iter2) {
                         Object const *temp_obj_shade = (*iter2);
-                        if ((temp_obj_shade != temp_obj) && temp_obj_shade->intersect(r, t_dist) &&
-                            (t_dist < origin_dist)) {
+                        IntersectResult shade_test_result = temp_obj_shade->intersect(r);
+                        if ((temp_obj_shade != temp_obj) && shade_test_result.result != MISS &&
+                            (shade_test_result.dist < origin_dist)) {
                             shade = 0;
                             break;
                         }
                     }
-                    VecF N = hit_object->getNormal(hit_point);
-                    if (hit_object->getMaterial().getDiffusion() > 0) {
+                    if (trace_rst.hit_object->getMaterial().getDiffusion() > 0) {
                         float dot = N.dot(L);
                         if (dot > 0) {
-                            float diffusion = dot * hit_object->getMaterial().getDiffusion() * shade;
-                            color += diffusion * hit_object->getMaterial().getColor() *
+                            float diffusion = dot * trace_rst.hit_object->getMaterial().getDiffusion() * shade;
+                            trace_rst.color += diffusion * trace_rst.hit_object->getMaterial().getColor() *
                                      temp_obj->getMaterial().getColor();
                         }
                     }
-                    if (hit_object->getMaterial().getSpecular() > 0.0f) {
+                    if (trace_rst.hit_object->getMaterial().getSpecular() > 0.0f) {
                         VecF V = ray.getDirection();
                         VecF R = L - 2.0f * L.dot(N) * N;
                         float dot = V.dot(R);
                         if (dot > 0) {
-                            float specular = powf(dot, 20) * hit_object->getMaterial().getSpecular() * shade;
-                            color += specular * temp_obj->getMaterial().getColor();
+                            float specular = powf(dot, 20) * trace_rst.hit_object->getMaterial().getSpecular() * shade;
+                            trace_rst.color += specular * temp_obj->getMaterial().getColor();
                         }
                     }
                 }
             }
         }
-        float reflection = hit_object->getMaterial().getReflection();
+        float reflection = trace_rst.hit_object->getMaterial().getReflection();
         if (reflection > 0){
-            VecF N = hit_object->getNormal(hit_point);
+            VecF N = trace_rst.hit_object->getNormal(hit_point);
             VecF R = ray.getDirection() - 2.0f * ray.getDirection().dot(N) * N;
             if (depth < TRACEDEPTH){
                 Color rcol( 0, 0, 0 );
-                float reflect_dist = 0;
-                rayTrace(Ray(hit_point + R * EPSILON, R), rcol, reflect_dist, r_index, depth + 1);
-                color += reflection * rcol * hit_object->getColor(hit_point);
+                Engine::TraceResult reflect_result = rayTrace(Ray(hit_point + R * EPSILON, R), r_index, depth + 1);
+                trace_rst.color += reflection * reflect_result.color * trace_rst.hit_object->getColor(hit_point);
             }
         }
-        float refraction = hit_object->getMaterial().getRefraction();
+        float refraction = trace_rst.hit_object->getMaterial().getRefraction();
         if (refraction > 0.0f && depth < TRACEDEPTH){
-            float index_next = hit_object->getMaterial().getRefraction_index();
-            if (result == INPRIM){
-                // cout << hit_object->getMaterial().getRefraction_index() << endl;
-                // assert(hit_object->getMaterial().getRefraction_index() > 1.0f);
+            float index_next = trace_rst.hit_object->getMaterial().getRefraction_index();
+            VecF N = trace_rst.hit_object->getNormal(hit_point);
+            if (min_dist_result.result == INSIDE){
                 index_next = 1.0;
+                N *= -1.0f;
             }
             float n = r_index / index_next;
-            // cout << n << endl;
-            // cout << hit_object->getName() << ", " << hit_object->getMaterial().getRefraction_index() << ", " << n << endl;
-            VecF N = hit_object->getNormal(hit_point) * (float)result;
             float cosI = -N.dot(ray.getDirection());
             float cosT2 = 1.0f - n * n * (1.0f - cosI * cosI);
-            float refract_dist = 0;
             if (cosT2 > 0.0f){
-                // VecF T = (n * ray.getDirection()) + (n * cosI - sqrtf( cosT2 )) * N;
                 VecF T = n * (ray.getDirection() + N * cosI) - N * sqrtf( cosT2 );
-                Color rcol( 0, 0, 0 );
-                rayTrace( Ray( hit_point + T * EPSILON, T ), rcol, refract_dist, index_next, depth + 1);
-//                Color abosrbance = hit_object->getColor(hit_point) * 0.1f * -refract_dist;
-                color += rcol * refraction;
+                Engine::TraceResult refract_result = rayTrace( Ray( hit_point + T * EPSILON, T ), index_next, depth + 1);
+                trace_rst.color += refract_result.color * refraction;
             }
         }
     }
-    return hit_object;
+    return trace_rst;
 }
 
-void Engine::render() {
-    scene->initScene();
-    canvas = new Color[image_height * image_width];
-    VecF view_point(0, 0, -5);
-    float x_pos = world_x1, y_pos = world_y1;
-    int total = image_height * image_width;
-    int count = 0;
-    float dist = 0;
-    const Object* last_obj = NULL;
-    const Object* curr_obj = NULL;
-    const Object* object_last_line[image_width];
-    for (int y = 0; y < image_height; ++y, y_pos += w_dy) {
-        x_pos = world_x1;
-        for (int x = 0; x < image_width; ++x, x_pos += w_dx) {
-            Color &nowColor = canvas[y * image_width + x];
-            VecF dir = VecF(x_pos, y_pos, 0) - view_point;
-            curr_obj = rayTrace(Ray(view_point, dir), nowColor, dist, 1, 1);
-            if (curr_obj != last_obj || object_last_line[x] != last_obj){
-                object_last_line[x] = curr_obj;
-                last_obj = curr_obj;
-                Color super_sampling(0);
-                for ( int tx = -1; tx < 2; tx++ ) for ( int ty = -1; ty < 2; ty++ ){
-                        VecF sup_dir = VecF(x_pos + w_dx * tx / 2.0f, y_pos + w_dy * ty / 2.0f, 0) - view_point;
-                        float dist;
-                        rayTrace(Ray(view_point, sup_dir), super_sampling, dist, 1.0f, 1);
-                    }
-                nowColor = super_sampling / 9;
-            }
-
-            ++count;
-//            cout << "status: " << count << " / " << total << ", " << (float)count / total << "\n";
-        }
-    }
+void Engine::drawPicture(const Color* canvas) {
     std::ofstream ofs("./render_image.ppm", std::ios::out | std::ios::binary);
     ofs << "P6\n" << image_width << " " << image_height << "\n255\n";
     for (int i = 0; i < image_width * image_height; ++i) {
@@ -167,5 +127,57 @@ void Engine::render() {
             (unsigned char) (std::min(float(1), canvas[i].z) * 255);
     }
     ofs.close();
+    fprintf(stdout, "Drawing Finished\n");
+}
+
+void Engine::render(TraceConfig& config) {
+    scene->initScene();
+    Color* canvas = new Color[image_height * image_width];
+    VecF view_point(0, 0, -5);
+    int total = image_height * image_width;
+
+    std::atomic<int> cnt_rendered;
+    std::mutex mtx;
+    moodycamel::ConcurrentQueue<std::pair<int, int>> q;
+    cnt_rendered = 0;
+    auto func = [&] {
+        for (std::pair<int, int> item; ;) {
+            if (!q.try_dequeue(item))
+                return;
+
+            int x = item.first, y = item.second;
+            float sx = world_x1 + w_dx * x;
+            float sy = world_y1 + w_dy * y;
+            VecF dir = VecF(sx, sy, 0) - view_point;
+            TraceResult pixel = rayTrace(Ray(view_point, dir), 1, 1);
+
+            canvas[y * image_width + x] = pixel.color;
+            ++cnt_rendered;
+        }
+    };
+
+    std::vector<std::pair<int, int>> xys;
+    for (int y = 0; y < image_height; ++y)
+        for (int x = 0; x < image_width; ++x)
+            xys.emplace_back(x, y);
+    std::random_shuffle(xys.begin(), xys.end());
+    for (const auto &xy : xys) q.enqueue(xy);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<std::thread> workers;
+    for (int i = 0; i < config.num_worker; ++i) workers.emplace_back(func);
+
+    while (true){
+        int cnt = cnt_rendered.load();
+        auto now = std::chrono::high_resolution_clock::now();
+        auto sec = (now - start).count() / 1e9;
+        fprintf(stderr, "\rrendered %d/%d pixels using %d workers in %.3fs...", cnt, total, config.num_worker, sec);
+        if (cnt == total) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+    for (auto &worker : workers) worker.join();
+
+    fprintf(stdout, "\nCalculation Finished\n");
+    drawPicture(canvas);
     delete[] canvas;
 }

@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include "common.h"
 
 using std::string;
 
@@ -89,13 +90,9 @@ public:
 
     Object() {}
 
-    virtual int intersect(const Ray &ray, float &dist) const {
-        return MISS;
-    };
+    virtual IntersectResult intersect(const Ray &ray) const = 0;
 
-    virtual VecF getNormal(VecF &pos) const {
-        return VecF();
-    };
+    virtual VecF getNormal(VecF &pos) const = 0;
 
     virtual Color getColor(VecF &) const { return material.getColor(); }
 
@@ -130,7 +127,7 @@ public:
         return radius;
     }
 
-    int intersect(const Ray &ray, float &dist) const override;
+    IntersectResult intersect(const Ray &ray) const override;
 
     VecF getNormal(VecF &pos) const override;
 
@@ -148,7 +145,7 @@ public:
     Plane(const Material &material, const string &name, bool light, const VecF &normal, const float &shift) : Object(
             material, name, light), normal(normal), shift(shift) {}
 
-    int intersect(const Ray &ray, float &dist) const override;
+    IntersectResult intersect(const Ray &ray) const override;
 
     VecF getNormal(VecF &pos) const override;
 

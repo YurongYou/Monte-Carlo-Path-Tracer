@@ -6,13 +6,15 @@
 #define RAYTRACING_CONSTANTS_H
 
 #define EPSILON			0.001f
-#define TRACEDEPTH		6
+#define TRACEDEPTH		5
 #define PI	3.141592653589793238462f
 
-#define HIT		 1		// Ray hit primitive
-#define MISS	 0		// Ray missed primitive
-#define INPRIM	-1		// Ray started inside primitive
-
+enum HitType {MISS, HIT, INSIDE};
 #define INFDIST  1000000.0f
+
+struct IntersectResult{
+    HitType result;
+    float dist;
+};
 
 #endif //RAYTRACING_CONSTANTS_H

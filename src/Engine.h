@@ -10,17 +10,30 @@
 
 class Engine {
 public:
+    struct TraceConfig {
+        int num_worker = 4;
+        int num_trace_depth = 3;
+
+        TraceConfig() {}
+    };
+
+    struct TraceResult {
+        Color color;
+        const Object* hit_object;
+    };
+
     Engine(int image_width, int image_height, float world_x1, float world_y1, float world_x2, float world_y2);
 
     ~Engine();
 
-    const Object* rayTrace(const Ray &ray, Color &color, float& dist, const float& r_index, int depth);
+    TraceResult rayTrace(const Ray &ray, const float& r_index, const int&  depth);
 
-    void render();
+    void render(TraceConfig& config);
+
+    void drawPicture(const Color* canvas);
 
 private:
     Scene *scene;
-    VecF *canvas;
     int image_width, image_height;
     float world_x1, world_y1, world_x2, world_y2, w_dx, w_dy;
 };

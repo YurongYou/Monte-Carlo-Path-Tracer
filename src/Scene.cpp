@@ -21,15 +21,12 @@ void Scene::initScene() {
 
     // walls
     plane_material.setColor( Color( 0.5f, 0.3f, 0.5f ) );
-//    plane_material.setDiffusion(0.6f);
-//    plane_material.setSpecular(0.0f);
+
     object_list.push_back(new Plane(plane_material, "wall", false, VecF(0.4f, 0, -1), -12.0f));
 
     // ceiling
     plane_material.setColor( Color( 0.4f, 0.7f, 0.7f ) );
-//    plane_material.setDiffusion(0.5f);
     object_list.push_back(new Plane(plane_material, "ceiling", false, VecF(0, -1, 0), -7.4f));
-
 
 
     for ( int x = 0; x < 8; x++ )
@@ -42,13 +39,12 @@ void Scene::initScene() {
             object_list.push_back(new Sphere(sphere_material, "grid sphere", false, VecF(-4.5f + x * 1.5f, -4.3f + y * 1.5f, 10), 0.3f));
         }
 
-
     sphere_material.clear();
     sphere_material.setColor(WHITE);
     sphere_material.setRefraction_index(1.3f);
     sphere_material.setRefraction(0.8f);
     sphere_material.setReflection(0.0f);
-    object_list.push_back(new Sphere(sphere_material, "big sphere", false, VecF(0.0f, 0.5f, 4), 2.5f));
+    object_list.push_back(new Sphere(sphere_material, "transparent sphere", false, VecF(3.0f, 0.6f, 4), 3.0f));
 
     sphere_material.clear();
     sphere_material.setColor(Color( 0.7f, 0.7f, 1.0f ));
@@ -58,32 +54,6 @@ void Scene::initScene() {
     object_list.push_back(new Sphere(sphere_material, "small sphere", false, VecF(-5.5f, -0.5f, 7), 2.0f));
 
 
-//    sphere_material.clear();
-//    sphere_material.setColor(Color( 1.0f, 0.4f, 0.4f ));
-//    sphere_material.setRefraction_index(1.3f);
-//    sphere_material.setRefraction(0.8f);
-//    sphere_material.setReflection(0.0f);
-//    sphere_material.setDiffusion(1.0f);
-//    object_list.push_back(new Sphere(sphere_material, "extra sphere", false, VecF( -3.0f, -3.8f, 5 ), 1.5f));
-
-    // big sphere
-//    sphere_material.setReflection(0.0f);
-//    sphere_material.setRefraction(1.0f);
-//    sphere_material.setRefraction_index(1.3f);
-//    sphere_material.setDiffusion(0.1f);
-//    sphere_material.setColor(WHITE);
-//    object_list.push_back(new Sphere(sphere_material, "transparent", false, VecF(1.0f, 0.0f, -3), 1.0f));
-
-    // small sphere
-//    sphere_material.setReflection(1.0f);
-//    sphere_material.setRefraction(0.0f);
-//    sphere_material.setDiffusion(0.0f);
-//    sphere_material.setColor(RED);
-//    object_list.push_back(new Sphere(sphere_material, "small sphere", false, VecF(0, 0, 15), 1.0f));
-//    object_list.push_back(new Sphere(sphere_material, "small sphere", false, VecF(30, 0, 30), 0.5f));
-
-
-
 
     // light source 1
     light_material.setColor(Color( 0.4f, 0.4f, 0.4f ));
@@ -91,7 +61,4 @@ void Scene::initScene() {
     // light source 2
     light_material.setColor(Color( 0.6f, 0.6f, 0.8f ));
     object_list.push_back(new Sphere(light_material, "light 2", true, VecF(-3, 5, 1), 0.1f));
-
-//    // light source 1, white light
-//    object_list.push_back(new Sphere(light_material, "light 2", true, VecF(20, 20, -10), 0.1f));
 }
