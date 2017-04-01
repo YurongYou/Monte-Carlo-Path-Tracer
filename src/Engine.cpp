@@ -9,9 +9,17 @@
 #include <atomic>
 #include <vector>
 #include <queue>
+#include <random>
 #include "concurrentqueue.h"
 
 using namespace std;
+
+VecF Engine::uniformHemisphereSample() {
+    float cosTheta = uni(gen);
+    float sinTheta = sqrtf(1 - cosTheta * cosTheta);
+    float phi = 2 * PI * uni(gen);
+    return VecF(sinTheta * cosf(phi), cosTheta, sinTheta * sinf(phi));
+}
 
 Engine::Engine(int image_width, int image_height, float world_x1, float world_y1, float world_x2, float world_y2)
         : image_width(image_width), image_height(image_height), world_x1(world_x1), world_y1(world_y1),
@@ -19,6 +27,8 @@ Engine::Engine(int image_width, int image_height, float world_x1, float world_y1
     scene = new Scene();
     w_dx = (world_x2 - world_x1) / image_width;
     w_dy = (world_y2 - world_y1) / image_height;
+    gen = std::default_random_engine(static_cast<unsigned int>(time(NULL)));
+    uni = std::uniform_real_distribution<float>(0, 1);
 }
 
 Engine::~Engine() {
@@ -48,7 +58,7 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
     } else {
         VecF N = trace_rst.hit_object->getNormal(hit_point);
         for (ObjectList::const_iterator iter = obj_list.begin(); iter != obj_list.end(); ++iter) {
-            const Object* temp_obj = (*iter);
+            const Object *temp_obj = (*iter);
             if (temp_obj->isLight()) {
                 const Sphere *point_light = dynamic_cast<const Sphere *>(temp_obj);
                 if (point_light) {
@@ -57,7 +67,7 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
                     float origin_dist = L.length();
                     L.normalize();
                     // check if there are other surfaces blocking the light
-                    Ray r = Ray(hit_point + L * EPSILON , L);
+                    Ray r = Ray(hit_point + L * EPSILON, L);
                     for (ObjectList::const_iterator iter2 = obj_list.begin(); iter2 != obj_list.end(); ++iter2) {
                         Object const *temp_obj_shade = (*iter2);
                         IntersectResult shade_test_result = temp_obj_shade->intersect(r);
@@ -72,7 +82,7 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
                         if (dot > 0) {
                             float diffusion = dot * trace_rst.hit_object->getMaterial().getDiffusion() * shade;
                             trace_rst.color += diffusion * trace_rst.hit_object->getMaterial().getColor() *
-                                     temp_obj->getMaterial().getColor();
+                                               temp_obj->getMaterial().getColor() / PI;
                         }
                     }
                     if (trace_rst.hit_object->getMaterial().getSpecular() > 0.0f) {
@@ -86,6 +96,31 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
                     }
                 }
             }
+        }
+        // indirect diffusion
+        // N is the normal of the plane of hit point
+        float indirect_diffusion = trace_rst.hit_object->getMaterial().getDiffusion();
+        if (indirect_diffusion > 0){
+            VecF Nx, Nz, Ny = N;
+            if (fabs(Ny.x) > fabs(Ny.y)) Nx = VecF(Ny.z, 0, -Ny.x);
+            else Nx = VecF(0, -Ny.z, Ny.y);
+            Nx.normalize();
+            Nz = Ny.cross(Nx);
+            Nz.normalize();
+            Color color_indirect_diffusion(0);
+            for (int i = 0; i < DIFFSAMPLE; ++i) {
+                VecF sample = uniformHemisphereSample();
+                VecF sample_transformed = VecF(
+                        sample.x * Nx.x + sample.y * Ny.x + sample.z * Nz.x,
+                        sample.x * Nx.y + sample.y * Ny.y + sample.z * Nz.y,
+                        sample.x * Nx.z + sample.y * Ny.z + sample.z * Nz.z
+                );
+                assert(sample_transformed.dot(Ny) > -EPSILON);
+                TraceResult diffuse = rayTrace(Ray(hit_point + sample_transformed * EPSILON, sample_transformed), r_index, depth + 1);
+                color_indirect_diffusion += sample.y * diffuse.color;
+            }
+            color_indirect_diffusion /= (DIFFSAMPLE * (1 / (2 * PI)));
+            trace_rst.color += trace_rst.hit_object->getMaterial().getColor() * color_indirect_diffusion;
         }
         float reflection = trace_rst.hit_object->getMaterial().getReflection();
         if (reflection > 0){
