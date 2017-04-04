@@ -8,8 +8,10 @@
 
 #include <list>
 #include "Object.h"
+#include "Light.h"
 
 typedef std::list<const Object*> ObjectList;
+typedef std::list<const Light*> LightList;
 
 class Scene {
 public:
@@ -18,9 +20,13 @@ public:
         return object_list;
     }
 
+    const LightList &getLight_list() const {
+        return light_list;
+    }
+
 private:
     ObjectList object_list;
-
+    LightList light_list;
 };
 
 

@@ -14,8 +14,8 @@ class Engine {
 public:
     struct TraceConfig {
         int num_worker = 4;
-        int num_trace_depth = 5;
-        int num_diff_sample = 10;
+//        int num_trace_depth = 5;
+//        int num_diff_sample = 10;
 
         TraceConfig() {}
     };
@@ -23,6 +23,7 @@ public:
     struct TraceResult {
         Color color;
         const Object* hit_object;
+        float dist;
     };
 
     Engine(int image_width, int image_height, float world_x1, float world_y1, float world_x2, float world_y2);

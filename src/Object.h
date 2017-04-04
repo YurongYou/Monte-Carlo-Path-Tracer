@@ -16,46 +16,67 @@ using std::string;
 
 class Material {
 public:
-    Material() : color(WHITE), reflection(0.0f), diffusion(0.2f), specular(0.5f), refraction(0.0f), refraction_index(1.0f) {}
+    Material() : emission(BLACK), intrinsic_color(WHITE),  diffuse_prob(0.8f),
+                 reflection_prob(0.2f), refraction_prob(0.0f), base_reflection_rate(0.5f), refraction_index(1.0f) {}
 
-    const Color &getColor() const {
-        return color;
+    const Color &getEmission() const {
+        return emission;
     }
 
-    void setColor(const Color &color) {
-        Material::color = color;
+
+    void clear(){
+        emission = BLACK;
+        intrinsic_color = WHITE;
+        diffuse_prob = 0.8f;
+        reflection_prob = 0.2f;
+        refraction_prob = 0.0f;
+        base_reflection_rate = 0.5f;
+        refraction_index = 1.0f;
     }
 
-    float getReflection() const {
-        return reflection;
+public:
+    void setEmission(const Color &emission) {
+        Material::emission = emission;
     }
 
-    void setReflection(float reflection) {
-        Material::reflection = reflection;
+    const Color &getIntrinsic_color() const {
+        return intrinsic_color;
     }
 
-    float getDiffusion() const {
-        return diffusion;
+    void setIntrinsic_color(const Color &intrinsic_color) {
+        Material::intrinsic_color = intrinsic_color;
     }
 
-    void setDiffusion(float diffusion) {
-        Material::diffusion = diffusion;
+    float getDiffuse_prob() const {
+        return diffuse_prob;
     }
 
-    float getSpecular() const {
-        return specular;
+    void setDiffuse_prob(float diffuse_prob) {
+        Material::diffuse_prob = diffuse_prob;
     }
 
-    void setSpecular(float specular) {
-        Material::specular = specular;
+    float getReflection_prob() const {
+        return reflection_prob;
     }
 
-    float getRefraction() const {
-        return refraction;
+    void setReflection_prob(float reflection_prob) {
+        Material::reflection_prob = reflection_prob;
     }
 
-    void setRefraction(float refraction) {
-        Material::refraction = refraction;
+    float getRefraction_prob() const {
+        return refraction_prob;
+    }
+
+    void setRefraction_prob(float refraction_prob) {
+        Material::refraction_prob = refraction_prob;
+    }
+
+    float getBase_reflection_rate() const {
+        return base_reflection_rate;
+    }
+
+    void setBase_reflection_rate(float base_reflection_rate) {
+        Material::base_reflection_rate = base_reflection_rate;
     }
 
     float getRefraction_index() const {
@@ -66,58 +87,46 @@ public:
         Material::refraction_index = refraction_index;
     }
 
-    void clear(){
-        color = WHITE;
-        reflection = 0.0f;
-        diffusion = 0.2f;
-        specular = 0.5f;
-        refraction = 0.0f;
-        refraction_index = 1.0f;
-    }
 private:
-    Color color;
-    float reflection;
-    float diffusion;
-    float specular;
-    float refraction;
+    Color emission;
+    Color intrinsic_color;
+    float diffuse_prob;
+    float reflection_prob;
+    float refraction_prob;
+
+    float base_reflection_rate;
+
     float refraction_index;
 };
 
 // simple isotropic objects
 class Object {
 public:
-    Object(const Material &material, const string &name, bool light) : material(material), name(name), light(light) {}
+    Object(const Material &material, const string &name) : material(material), name(name) {}
 
     Object() {}
 
     virtual IntersectResult intersect(const Ray &ray) const = 0;
 
-    virtual VecF getNormal(VecF &pos) const = 0;
+    virtual VecF getNormal(const VecF &pos) const = 0;
 
-    virtual Color getColor(VecF &) const { return material.getColor(); }
+    virtual Color getColor(VecF &) const { return material.getIntrinsic_color(); }
 
-    bool isLight() const { return light; }
 
     const string &getName() const { return name; }
 
-    void setName(const string &name) { Object::name = name; }
-
     const Material &getMaterial() const { return material; }
 
-    void setMaterial(const Material &material) { Object::material = material; }
-
-    void setLight(bool light) { Object::light = light; }
 
 protected:
     Material material;
     string name;
-    bool light;
 };
 
 class Sphere : public Object {
 public:
-    Sphere(const Material &material, const string &name, bool light, const VecF &center, float radius) : Object(
-            material, name, light), center(center), radius(radius), radius2(radius * radius) {}
+    Sphere(const Material &material, const string &name, const VecF &center, float radius) : Object(
+            material, name), center(center), radius(radius), radius2(radius * radius) {}
 
     const VecF &getCenter() const {
         return center;
@@ -129,7 +138,7 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-    VecF getNormal(VecF &pos) const override;
+    VecF getNormal(const VecF &pos) const override;
 
     float getRadius2() const {
         return radius2;
@@ -142,16 +151,37 @@ private:
 
 class Plane : public Object {
 public:
-    Plane(const Material &material, const string &name, bool light, const VecF &normal, const float &shift) : Object(
-            material, name, light), normal(normal), shift(shift) {}
+    Plane(const Material &material, const string &name, const VecF &normal, const float &shift) : Object(
+            material, name), normal(normal), shift(shift) {}
 
     IntersectResult intersect(const Ray &ray) const override;
 
-    VecF getNormal(VecF &pos) const override;
+    VecF getNormal(const VecF &pos) const override;
 
 private:
     VecF normal;
     float shift;
+};
+
+class Triangle: public Object{
+public:
+    Triangle(const Material &material, const string &name,
+             const VecF& p0, const VecF& p1, const VecF& p2) :
+            Object(material, name) {
+        points[0] = p0;
+        points[1] = p1;
+        points[2] = p2;
+        normal = (p1 - p0).cross(p2 - p0);
+        normal.normalize();
+    }
+
+    IntersectResult intersect(const Ray &ray) const override;
+
+    VecF getNormal(const VecF &pos) const override;
+
+private:
+    VecF points[3];
+    VecF normal;
 };
 
 #endif //RAYTRACING_OBJECT_H

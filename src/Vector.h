@@ -38,19 +38,29 @@ public:
     Vector<T>& operator *= (const Vector<T> &v) { x *= v.x, y *= v.y, z *= v.z; return *this; }
     Vector<T>& operator *= (const T &c) { x *= c, y *= c, z *= c; return *this; }
     Vector<T>& operator /= (const T &c) { x /= c, y /= c, z /= c; return *this; }
+    bool isEqual (const Vector<T> &c) const {
+        if (fabsf(x - c.x) < EPSILON && fabsf(y - c.y) < EPSILON && fabsf(z - c.z) < EPSILON)
+            return true;
+        return false;
+    }
     Vector<T>& exp() {
         x = expf(x);
         y = expf(y);
-        x = expf(z);
+        z = expf(z);
         return *this;
     }
     Vector<T> operator - () const { return Vector<T>(-x, -y, -z); }
     friend Vector<T> operator * ( T f, const Vector<T>& v ) { return Vector<T>( v.x * f, v.y * f, v.z * f ); }
 
+    T getMax() const {
+        return std::max(x, std::max(y, z));
+    }
+
     T dot(const Vector<T> &v) const { return x * v.x + y * v.y + z * v.z; }
     Vector<T> cross(const Vector<T> &v) const {
         return Vector<T>( y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x );
     }
+
     friend std::ostream & operator << (std::ostream &os, const Vector<T> &v)
     {
         os << "(" << v.x << " " << v.y << " " << v.z << ")";
@@ -59,13 +69,14 @@ public:
 };
 
 typedef Vector<float> VecF;
-// RGB color
+// RGB emission
 typedef Vector<float> Color;
 
 #define WHITE   Color(1.0f, 1.0f, 1.0f)
+#define BLACK   Color(0.0f, 0.0f, 0.0f)
 #define GRAY    Color(0.6f, 0.6f, 0.6f)
 #define RED     Color(0.8f, 0.0f, 0.0f)
 #define BLUE    Color(0.0f, 0.2f, 1.0f)
-#define GREEN   Color(0.0f, 1.0f, 0.5f)
+#define GREEN   Color(0.0f, 1.0f, 0.0f)
 
 #endif //RAYTRACING_UTILITIES_H
