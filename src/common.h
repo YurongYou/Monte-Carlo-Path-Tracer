@@ -7,8 +7,8 @@
 
 #define EPSILON			0.001f
 #define TRACEDEPTH		5
-#define SAMPLE_SUB_PIX  4
-#define SAMPLENUM       64
+#define SAMPLE_SUB_PIX  8
+#define SAMPLENUM       512
 #define PI	3.141592653589793238462f
 
 enum HitType {MISS, HIT, INSIDE};

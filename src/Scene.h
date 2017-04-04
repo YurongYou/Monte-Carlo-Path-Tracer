@@ -11,22 +11,17 @@
 #include "Light.h"
 
 typedef std::list<const Object*> ObjectList;
-typedef std::list<const Light*> LightList;
 
 class Scene {
 public:
-    void initScene();
+    void CornellBox();
+    void MeshTest(std::string fname);
     const ObjectList &getObejct_list() const {
         return object_list;
     }
 
-    const LightList &getLight_list() const {
-        return light_list;
-    }
-
 private:
     ObjectList object_list;
-    LightList light_list;
 };
 
 

@@ -76,7 +76,7 @@ typedef Vector<float> Color;
 #define BLACK   Color(0.0f, 0.0f, 0.0f)
 #define GRAY    Color(0.6f, 0.6f, 0.6f)
 #define RED     Color(0.8f, 0.0f, 0.0f)
-#define BLUE    Color(0.0f, 0.2f, 1.0f)
+#define BLUE    Color(0.0f, 0.0f, 1.0f)
 #define GREEN   Color(0.0f, 1.0f, 0.0f)
 
 #endif //RAYTRACING_UTILITIES_H

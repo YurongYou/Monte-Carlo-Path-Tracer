@@ -45,7 +45,6 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
     IntersectResult min_dist_result;
     min_dist_result.dist = INFDIST;
     min_dist_result.result = MISS;
-//    VecF hit_point;
     const ObjectList& obj_list = scene->getObejct_list();
 //    const LightList& light_list = scene->getLight_list();
 //    bool hitLight = false;
@@ -202,21 +201,23 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
         );
         assert(sample_transformed.dot(Ny) > -EPSILON);
         TraceResult diffuse = rayTrace(Ray(hit_point + sample_transformed * EPSILON, sample_transformed), r_index, depth + 1);
-        VecF Rdiffuse = trace_rst.hit_object->getMaterial().getIntrinsic_color()
-                       / trace_rst.hit_object->getMaterial().getIntrinsic_color().getMax();
+//        VecF Rdiffuse = trace_rst.hit_object->getMaterial().getIntrinsic_color()
+//                       / trace_rst.hit_object->getMaterial().getIntrinsic_color().getMax();
         trace_rst.color = trace_rst.hit_object->getMaterial().getIntrinsic_color() * diffuse.color / trace_rst.hit_object->getMaterial().getDiffuse_prob();
-
-    } else if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob() + trace_rst.hit_object->getMaterial().getReflection_prob()){
+    } else if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()
+                   + trace_rst.hit_object->getMaterial().getReflection_prob()){
         // do reflection
-        VecF N = trace_rst.hit_object->getNormal(hit_point);
-        VecF R = ray.getDirection() - 2.0f * ray.getDirection().dot(N) * N;
-        float cosTheta = N.dot(R);
         if (depth < TRACEDEPTH){
+            VecF N = trace_rst.hit_object->getNormal(hit_point);
+            VecF R = ray.getDirection() - 2.0f * ray.getDirection().dot(N) * N;
+//            float cosTheta = N.dot(R);
             Engine::TraceResult reflect_result = rayTrace(Ray(hit_point + R * EPSILON, R), r_index, depth + 1);
-            float base = trace_rst.hit_object->getMaterial().getBase_reflection_rate();
-            trace_rst.color = (base + (1 - base) * powf(1 - cosTheta, 5))* reflect_result.color / trace_rst.hit_object->getMaterial().getReflection_prob();
+//            float base = trace_rst.hit_object->getMaterial().getBase_reflection_rate();
+            trace_rst.color = reflect_result.color / trace_rst.hit_object->getMaterial().getReflection_prob();
         }
-    } else {
+    } else if  (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()
+                    + trace_rst.hit_object->getMaterial().getReflection_prob()
+                    + trace_rst.hit_object->getMaterial().getRefraction_prob()){
         if (depth < TRACEDEPTH){
             float index_next = trace_rst.hit_object->getMaterial().getRefraction_index();
             VecF N = trace_rst.hit_object->getNormal(hit_point);
@@ -232,7 +233,7 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
                 Engine::TraceResult refract_result = rayTrace( Ray( hit_point + T * EPSILON, T ), index_next, depth + 1);
                 float dist = refract_result.dist;
                 VecF beer = ( (-trace_rst.hit_object->getColor(hit_point) + 1) * (-0.02) * dist).exp();
-                trace_rst.color = refract_result.color * beer * trace_rst.hit_object->getMaterial().getRefraction_prob();
+                trace_rst.color = refract_result.color * beer / trace_rst.hit_object->getMaterial().getRefraction_prob();
             }
         }
         // do refraction
@@ -256,9 +257,9 @@ void Engine::drawPicture(const Color* canvas) {
 }
 
 void Engine::render(TraceConfig& config) {
-    scene->initScene();
+    scene->CornellBox();
     Color* canvas = new Color[image_height * image_width];
-    VecF view_point(0, 0, -3.0f);
+    VecF view_point(0, 0, -5.0f);
     int total = image_height * image_width;
 
     std::atomic<int> cnt_rendered;
@@ -290,11 +291,11 @@ void Engine::render(TraceConfig& config) {
                         float tweak_y = uni(gen) * y_sub_range;
                         VecF dir = VecF(sx + i * x_sub_range + tweak_x, sy + j * y_sub_range + tweak_y, 0) - view_point;
                         TraceResult pixel = rayTrace(Ray(view_point, dir), 1, 1);
-                        collect += pixel.color;
+                        collect += pixel.color / (float)(SAMPLE_SUB_PIX * SAMPLE_SUB_PIX * SAMPLENUM);
                     }
                 }
             }
-            canvas[y * image_width + x] = collect / (float)(SAMPLE_SUB_PIX * SAMPLE_SUB_PIX * SAMPLENUM);
+            canvas[y * image_width + x] = collect;
             ++cnt_rendered;
         }
     };
