@@ -37,9 +37,14 @@ Engine::~Engine() {
 }
 
 Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const int& depth) {
-    TraceResult trace_rst = {.color = BLACK, .hit_object = NULL, .dist = -1};
+    TraceResult trace_rst;
+    trace_rst.color = BLACK;
+    trace_rst.hit_object = NULL;
+    trace_rst.dist = -1;
     if (depth > TRACEDEPTH) return trace_rst;
-    IntersectResult min_dist_result = {.dist = INFDIST, .result = MISS};
+    IntersectResult min_dist_result;
+    min_dist_result.dist = INFDIST;
+    min_dist_result.result = MISS;
 //    VecF hit_point;
     const ObjectList& obj_list = scene->getObejct_list();
 //    const LightList& light_list = scene->getLight_list();
@@ -257,7 +262,7 @@ void Engine::render(TraceConfig& config) {
     int total = image_height * image_width;
 
     std::atomic<int> cnt_rendered;
-    std::mutex mtx;
+//    std::mutex mtx;
     moodycamel::ConcurrentQueue<std::pair<int, int>> q;
     cnt_rendered = 0;
     auto func = [&] {

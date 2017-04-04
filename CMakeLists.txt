@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.5.1)
 project(RayTracing)
-set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_CXX_FLAGS "-O3 -pthread")
 set(CMAKE_CXX_STANDARD 11)
 
 include_directories(vendor/concurrentqueue)
