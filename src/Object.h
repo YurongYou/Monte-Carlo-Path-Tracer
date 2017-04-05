@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <vector>
 #include "common.h"
 
 using std::string;
@@ -182,6 +183,46 @@ public:
 private:
     VecF points[3];
     VecF normal;
+};
+
+class Mesh {
+public:
+    std::vector<VecF> points;
+    std::vector<VecF> normal;
+    void addVertex(const VecF& v){
+        points.emplace_back(v);
+    }
+};
+
+class MeshTriangle: public Object{
+public:
+    MeshTriangle(const Material &material, const string &name, int p0, int p1, int p2, const Mesh *mesh) : Object(
+            material, name), p0(p0), p1(p1), p2(p2), mesh(mesh) {
+
+        VecF point0 = mesh->points[p0];
+        VecF point1 = mesh->points[p1];
+        VecF point2 = mesh->points[p2];
+        local_normal = (point1 - point0).cross(point2 - point0);
+        local_normal.normalize();
+        float det = (-point0.z)*point1.y*point2.x + point0.y*point1.z*point2.x + point0.z*point1.x*point2.y - point0.x*point1.z*point2.y - point0.y*point1.x*point2.z + point0.x*point1.y*point2.z;
+        inverse[0] = VecF((-point1.z)*point2.y + point1.y*point2.z, point1.z*point2.x - point1.x*point2.z, (-point1.y)*point2.x + point1.x*point2.y) / det;
+        inverse[1] = VecF(point0.z*point2.y - point0.y*point2.z, (-point0.z)*point2.x + point0.x*point2.z, point0.y*point2.x - point0.x*point2.y) / det;
+        inverse[2] = VecF((-point0.z)*point1.y + point0.y*point1.z, point0.z*point1.x - point0.x*point1.z, (-point0.y)*point1.x + point0.x*point1.y) / det;
+    }
+
+    IntersectResult intersect(const Ray &ray) const override;
+
+    VecF getNormal(const VecF &pos) const override;
+
+    const VecF &getLocal_normal() const {
+        return local_normal;
+    }
+
+private:
+    int p0, p1, p2;
+    const Mesh* mesh;
+    VecF local_normal;
+    VecF inverse[3];
 };
 
 #endif //RAYTRACING_OBJECT_H

@@ -203,7 +203,8 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
         TraceResult diffuse = rayTrace(Ray(hit_point + sample_transformed * EPSILON, sample_transformed), r_index, depth + 1);
 //        VecF Rdiffuse = trace_rst.hit_object->getMaterial().getIntrinsic_color()
 //                       / trace_rst.hit_object->getMaterial().getIntrinsic_color().getMax();
-        trace_rst.color = trace_rst.hit_object->getMaterial().getIntrinsic_color() * diffuse.color / trace_rst.hit_object->getMaterial().getDiffuse_prob();
+        trace_rst.color = trace_rst.hit_object->getMaterial().getIntrinsic_color()
+                          * diffuse.color / trace_rst.hit_object->getMaterial().getDiffuse_prob();
     } else if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()
                    + trace_rst.hit_object->getMaterial().getReflection_prob()){
         // do reflection
@@ -257,7 +258,7 @@ void Engine::drawPicture(const Color* canvas) {
 }
 
 void Engine::render(TraceConfig& config) {
-    scene->CornellBox();
+    scene->MeshTest("/Users/youyurong/CLionProjects/RayTracing/models/sphere.obj");
     Color* canvas = new Color[image_height * image_width];
     VecF view_point(0, 0, -5.0f);
     int total = image_height * image_width;

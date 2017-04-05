@@ -22,6 +22,7 @@ public:
 
 private:
     ObjectList object_list;
+    Mesh mesh;
 };
 
 

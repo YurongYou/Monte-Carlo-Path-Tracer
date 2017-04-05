@@ -2,6 +2,7 @@
 // Created by Ficos on 26/03/2017.
 //
 
+#include <cassert>
 #include "Object.h"
 
 IntersectResult Sphere::intersect(const Ray &ray) const {
@@ -45,7 +46,7 @@ VecF Plane::getNormal(const VecF &pos) const {
     return normal;
 }
 
-IntersectResult Triangle::intersect(const Ray &ray) const {
+static inline IntersectResult triangleIntersect(const Ray &ray, const VecF* points) {
     IntersectResult rst = {.result = MISS};
     const VecF& dir = ray.getDirection();
     const VecF& origin = ray.getOrigin();
@@ -86,6 +87,28 @@ IntersectResult Triangle::intersect(const Ray &ray) const {
     return rst;
 }
 
+IntersectResult Triangle::intersect(const Ray &ray) const {
+    return triangleIntersect(ray, points);
+}
+
 VecF Triangle::getNormal(const VecF &pos) const {
     return normal;
+}
+
+IntersectResult MeshTriangle::intersect(const Ray &ray) const {
+//    assert(!mesh);
+    VecF points[3];
+    points[0] = mesh->points[p0];
+    points[1] = mesh->points[p1];
+    points[2] = mesh->points[p2];
+    return triangleIntersect(ray, points);
+}
+
+VecF MeshTriangle::getNormal(const VecF &pos) const {
+    // compute the average normal (if available)
+    if (mesh->normal.size() == 0) return local_normal;
+    float alpha = inverse[0].dot(pos);
+    float beta = inverse[1].dot(pos);
+    float gamma = inverse[2].dot(pos);
+    return alpha * mesh->normal[p0] + beta * mesh->normal[p1] + gamma * mesh->normal[p2];
 }
