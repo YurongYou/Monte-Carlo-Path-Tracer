@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <cstring>
 #include "Scene.h"
 
 #define LINE_MAX_LEN 1000
