@@ -8,7 +8,6 @@
 
 #include <list>
 #include "Object.h"
-#include "Light.h"
 
 typedef std::list<const Object*> ObjectList;
 

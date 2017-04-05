@@ -65,18 +65,10 @@ void Scene::CornellBox(){
     sphere_material.setIntrinsic_color(WHITE);
     sphere_material.setRefraction_index(1.5f);
     sphere_material.setDiffuse_prob(0.0f);
-    sphere_material.setRefraction_prob(1.0f);
-    sphere_material.setReflection_prob(0.0f);
+    sphere_material.setRefraction_prob(0.9f);
+    sphere_material.setReflection_prob(0.1f);
     float radius2 = 1.0f;
     object_list.push_back(new Sphere(sphere_material, "transparent sphere", VecF(1.7f, -1.0f, 1.0f), radius2));
-
-//    sphere_material.clear();
-//    sphere_material.setIntrinsic_color(BLUE);
-//    sphere_material.setDiffuse_prob(1.0f);
-//    sphere_material.setRefraction_prob(0.0f);
-//    sphere_material.setReflection_prob(0.0f);
-//    float radius3 = 0.5f;
-//    object_list.push_back(new Sphere(sphere_material, "transparent sphere", VecF(1.0f, 1.5f, 3.5f), radius3));
 }
 
 void Scene::MeshTest(std::string fname) {
@@ -150,4 +142,8 @@ void Scene::MeshTest(std::string fname) {
                                        VecF(x1, high, z1), VecF(x1, high, z2), VecF(x2, high, z1)));
     object_list.push_back(new Triangle(triangle_light, "triangle2",
                                        VecF(x2, high, z1), VecF(x1, high, z2), VecF(x2, high, z2)));
+    Material plane_material = Material();
+    plane_material.setDiffuse_prob(1.0f);
+    plane_material.setIntrinsic_color( WHITE * 0.6 );
+    object_list.push_back(new Plane(plane_material, "floor", VecF(0, 1, 0), -1.0f));
 }

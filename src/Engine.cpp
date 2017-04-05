@@ -258,7 +258,8 @@ void Engine::drawPicture(const Color* canvas) {
 }
 
 void Engine::render(TraceConfig& config) {
-    scene->MeshTest("/Users/youyurong/CLionProjects/RayTracing/models/sphere.obj");
+    scene->MeshTest("/Users/youyurong/CLionProjects/RayTracing/models/teapot.obj");
+//    scene->CornellBox();
     Color* canvas = new Color[image_height * image_width];
     VecF view_point(0, 0, -5.0f);
     int total = image_height * image_width;
