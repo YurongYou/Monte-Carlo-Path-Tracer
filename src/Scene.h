@@ -15,12 +15,13 @@ class Scene {
 public:
     void CornellBox();
     void MeshTest(std::string fname);
-    const ObjectList &getObejct_list() const {
+    void castTest(std::string file);
+    const ObjectList &getObject_list() const {
         return object_list;
     }
-    void addObeject(const Object* obj){
+    void addObject(const Object *obj){
         object_list.push_back(obj);
-        if (obj->getMaterial().getEmission().isEqual(BLACK)){
+        if (!obj->getMaterial().getEmission().isEqual(BLACK)){
             light_list.push_back(obj);
         }
     }
@@ -29,7 +30,6 @@ public:
         return light_list;
     }
 
-private:
     ObjectList object_list;
     ObjectList light_list;
     Mesh mesh;

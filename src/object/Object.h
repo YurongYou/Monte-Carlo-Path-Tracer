@@ -5,20 +5,26 @@
 #ifndef RAYTRACING_OBJECT_H
 #define RAYTRACING_OBJECT_H
 
-#include "utility/Vector.h"
-#include "utility/Ray.h"
+#include "../utility/Vector.h"
+#include "../utility/Ray.h"
 #include <cstdlib>
 #include <string>
 #include <iostream>
 #include <vector>
-#include "utility/common.h"
+#include "../utility/common.h"
 
 using std::string;
+
+struct IntersectResult{
+    HitType result = MISS;
+    float dist = INFDIST;
+    VecF normal = NULL;
+};
 
 class Material {
 public:
     Material() : emission(BLACK), intrinsic_color(WHITE),  diffuse_prob(0.8f),
-                 reflection_prob(0.2f), refraction_prob(0.0f), base_reflection_rate(0.5f), refraction_index(1.0f) {}
+                 reflection_prob(0.0f), refraction_prob(0.0f), base_reflection_rate(0.5f), refraction_index(0.0f) {}
 
     const Color &getEmission() const {
         return emission;
@@ -28,11 +34,11 @@ public:
     void clear(){
         emission = BLACK;
         intrinsic_color = WHITE;
-        diffuse_prob = 0.8f;
-        reflection_prob = 0.2f;
+        diffuse_prob = 1.0f;
+        reflection_prob = 0.0f;
         refraction_prob = 0.0f;
         base_reflection_rate = 0.5f;
-        refraction_index = 1.0f;
+        refraction_index = 0.0f;
     }
 
 public:
@@ -109,7 +115,7 @@ public:
 
     virtual IntersectResult intersect(const Ray &ray) const = 0;
 
-    virtual VecF getNormal(const VecF &pos) const = 0;
+//    virtual VecF getNormal(const VecF &pos) const = 0;
 
     virtual Color getColor(VecF &) const { return material.getIntrinsic_color(); }
 
@@ -139,7 +145,7 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-    VecF getNormal(const VecF &pos) const override;
+//    VecF getNormal(const VecF &pos) const override;
 
     float getRadius2() const {
         return radius2;
@@ -157,7 +163,7 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-    VecF getNormal(const VecF &pos) const override;
+//    VecF getNormal(const VecF &pos) const override;
 
 private:
     VecF normal;
@@ -178,7 +184,9 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-    VecF getNormal(const VecF &pos) const override;
+//    VecF getNormal(const VecF &pos) const override;
+
+    VecF getMixPoint(const float& alpha, const float& beta) const;
 
 private:
     VecF points[3];
@@ -189,9 +197,6 @@ class Mesh {
 public:
     std::vector<VecF> points;
     std::vector<VecF> normal;
-    void addVertex(const VecF& v){
-        points.emplace_back(v);
-    }
 };
 
 class MeshTriangle: public Object{
@@ -204,15 +209,11 @@ public:
         VecF point2 = mesh->points[p2];
         local_normal = (point1 - point0).cross(point2 - point0);
         local_normal.normalize();
-        float det = (-point0.z)*point1.y*point2.x + point0.y*point1.z*point2.x + point0.z*point1.x*point2.y - point0.x*point1.z*point2.y - point0.y*point1.x*point2.z + point0.x*point1.y*point2.z;
-        inverse[0] = VecF((-point1.z)*point2.y + point1.y*point2.z, point1.z*point2.x - point1.x*point2.z, (-point1.y)*point2.x + point1.x*point2.y) / det;
-        inverse[1] = VecF(point0.z*point2.y - point0.y*point2.z, (-point0.z)*point2.x + point0.x*point2.z, point0.y*point2.x - point0.x*point2.y) / det;
-        inverse[2] = VecF((-point0.z)*point1.y + point0.y*point1.z, point0.z*point1.x - point0.x*point1.z, (-point0.y)*point1.x + point0.x*point1.y) / det;
     }
 
     IntersectResult intersect(const Ray &ray) const override;
 
-    VecF getNormal(const VecF &pos) const override;
+//    VecF getNormal(const VecF &pos) const override;
 
     const VecF &getLocal_normal() const {
         return local_normal;
@@ -222,7 +223,6 @@ private:
     int p0, p1, p2;
     const Mesh* mesh;
     VecF local_normal;
-    VecF inverse[3];
 };
 
 #endif //RAYTRACING_OBJECT_H
