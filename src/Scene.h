@@ -7,7 +7,7 @@
 
 
 #include <list>
-#include "Object.h"
+#include "object/Object.h"
 
 typedef std::list<const Object*> ObjectList;
 
@@ -18,9 +18,20 @@ public:
     const ObjectList &getObejct_list() const {
         return object_list;
     }
+    void addObeject(const Object* obj){
+        object_list.push_back(obj);
+        if (obj->getMaterial().getEmission().isEqual(BLACK)){
+            light_list.push_back(obj);
+        }
+    }
+
+    const ObjectList &getLight_list() const {
+        return light_list;
+    }
 
 private:
     ObjectList object_list;
+    ObjectList light_list;
     Mesh mesh;
 };
 

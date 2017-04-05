@@ -5,13 +5,13 @@
 #ifndef RAYTRACING_OBJECT_H
 #define RAYTRACING_OBJECT_H
 
-#include "Vector.h"
-#include "Ray.h"
+#include "utility/Vector.h"
+#include "utility/Ray.h"
 #include <cstdlib>
 #include <string>
 #include <iostream>
 #include <vector>
-#include "common.h"
+#include "utility/common.h"
 
 using std::string;
 

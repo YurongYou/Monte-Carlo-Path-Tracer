@@ -8,8 +8,9 @@
 
 #define LINE_MAX_LEN 1000
 void Scene::CornellBox(){
-    if (!object_list.empty()) {
+    if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
+        light_list.clear();
         mesh.normal.clear();
         mesh.points.clear();
     }
@@ -28,26 +29,26 @@ void Scene::CornellBox(){
 
     Material triangle_light = Material();
     triangle_light.setEmission(WHITE * 6);
-    object_list.push_back(new Triangle(triangle_light, "triangle1",
+    addObeject(new Triangle(triangle_light, "triangle1",
                                        VecF(x1, high, z1), VecF(x1, high, z2), VecF(x2, high, z1)));
-    object_list.push_back(new Triangle(triangle_light, "triangle2",
+    addObeject(new Triangle(triangle_light, "triangle2",
                                        VecF(x2, high, z1), VecF(x1, high, z2), VecF(x2, high, z2)));
 //     walls
     plane_material.setDiffuse_prob(1.0f);
     plane_material.setIntrinsic_color( WHITE * 0.6 );
-    object_list.push_back(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
+    addObeject(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
 
     plane_material.setIntrinsic_color( GREEN );
-    object_list.push_back(new Plane(plane_material, "left wall", VecF(1, 0, 0), left));
+    addObeject(new Plane(plane_material, "left wall", VecF(1, 0, 0), left));
 
     plane_material.setIntrinsic_color( RED );
-    object_list.push_back(new Plane(plane_material, "right wall", VecF(-1, 0, 0), -right));
+    addObeject(new Plane(plane_material, "right wall", VecF(-1, 0, 0), -right));
 
     plane_material.setIntrinsic_color( WHITE );
-    object_list.push_back(new Plane(plane_material, "back wall", VecF(0, 0, -1), -back));
+    addObeject(new Plane(plane_material, "back wall", VecF(0, 0, -1), -back));
 
     plane_material.setIntrinsic_color( WHITE * 0.8 );
-    object_list.push_back(new Plane(plane_material, "ceiling", VecF(0, -1, 0), -high - 0.05f));
+    addObeject(new Plane(plane_material, "ceiling", VecF(0, -1, 0), -high - 0.05f));
 
     Material sphere_material = Material();
     sphere_material.clear();
@@ -58,7 +59,7 @@ void Scene::CornellBox(){
     sphere_material.setReflection_prob(1.0f);
     sphere_material.setBase_reflection_rate(0.8f);
     float radius1 = 1.0f;
-    object_list.push_back(new Sphere(sphere_material, "refractive sphere", VecF(left + radius1 + 1, low + radius1, back - radius1 - 1), radius1));
+    addObeject(new Sphere(sphere_material, "refractive sphere", VecF(left + radius1 + 1, low + radius1, back - radius1 - 1), radius1));
 
 
     sphere_material.clear();
@@ -68,11 +69,16 @@ void Scene::CornellBox(){
     sphere_material.setRefraction_prob(0.9f);
     sphere_material.setReflection_prob(0.1f);
     float radius2 = 1.0f;
-    object_list.push_back(new Sphere(sphere_material, "transparent sphere", VecF(1.7f, -1.0f, 1.0f), radius2));
+    addObeject(new Sphere(sphere_material, "transparent sphere", VecF(1.7f, -1.0f, 1.0f), radius2));
 }
 
 void Scene::MeshTest(std::string fname) {
-    if (!object_list.empty()) object_list.clear();
+    if (!object_list.empty() || !light_list.empty()) {
+        object_list.clear();
+        light_list.clear();
+        mesh.normal.clear();
+        mesh.points.clear();
+    }
     std::ifstream fin(fname);
     if (!fin.is_open()) {
         std::cerr << "file not found, exit." << std::endl;
@@ -117,7 +123,7 @@ void Scene::MeshTest(std::string fname) {
                 MeshTriangle *tri = new MeshTriangle(triangle_material, "triangle_" + std::to_string(count_face),
                                                      p[0], p[1], p[2], &mesh);
                 if (p[0] != p[1] && p[1] != p[2] && p[2] != p[0]) {
-                    object_list.push_back(tri);
+                    addObeject(tri);
                 }
                 for (int i = 0; i < 3; ++i) {
                     ++count_normal[p[i]];
@@ -138,12 +144,12 @@ void Scene::MeshTest(std::string fname) {
     float high = 3;
     Material triangle_light = Material();
     triangle_light.setEmission(WHITE * 6);
-    object_list.push_back(new Triangle(triangle_light, "triangle1",
+    addObeject(new Triangle(triangle_light, "triangle1",
                                        VecF(x1, high, z1), VecF(x1, high, z2), VecF(x2, high, z1)));
-    object_list.push_back(new Triangle(triangle_light, "triangle2",
+    addObeject(new Triangle(triangle_light, "triangle2",
                                        VecF(x2, high, z1), VecF(x1, high, z2), VecF(x2, high, z2)));
     Material plane_material = Material();
     plane_material.setDiffuse_prob(1.0f);
     plane_material.setIntrinsic_color( WHITE * 0.6 );
-    object_list.push_back(new Plane(plane_material, "floor", VecF(0, 1, 0), -1.0f));
+    addObeject(new Plane(plane_material, "floor", VecF(0, 1, 0), -1.0f));
 }

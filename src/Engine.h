@@ -15,8 +15,7 @@ public:
     struct TraceConfig {
         int num_worker = 4;
 //        int num_trace_depth = 5;
-//        int num_diff_sample = 10;
-
+        bool isGlobalIllumination = true;
         TraceConfig() {}
     };
 
@@ -30,7 +29,7 @@ public:
 
     ~Engine();
 
-    TraceResult rayTrace(const Ray &ray, const float& r_index, const int&  depth);
+    TraceResult rayTrace(const Ray &ray, const float& r_index, const int&  depth, const TraceConfig& config);
 
     void render(TraceConfig& config);
 
