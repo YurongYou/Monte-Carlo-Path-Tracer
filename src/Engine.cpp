@@ -80,12 +80,12 @@ Color Engine::castRay(const Object *obj, const Object *light, const Ray &ray, co
             collect += diffusion * light->getMaterial().getEmission() * obj->getMaterial().getIntrinsic_color();
         }
     }
-    if (obj->getMaterial().getReflection_prob() > 0.0f) {
+    if (obj->getMaterial().getKs() > 0.0f) {
         VecF V = ray.getDirection();
         VecF R = L - 2.0f * L.dot(N) * N;
         float dot = V.dot(R);
         if (dot > 0) {
-            float specular = powf(dot, 20) * obj->getMaterial().getReflection_prob() * shade;
+            float specular = powf(dot, 20) * obj->getMaterial().getKs() * shade;
             collect += specular * light->getMaterial().getEmission();
         }
     }
@@ -122,31 +122,55 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
 
     VecF hit_point = ray.getOrigin() + ray.getDirection() * min_dist_result.dist;
     VecF N = min_dist_result.normal;
-    if (!config.isGlobalIllumination){
+    if (config.illumination_type == RAY_TRACING_WITH_CAST || config.illumination_type == MIX){
         // old model
         // ray casting
-        for (ObjectList::const_iterator iter = light_list.begin(); iter != light_list.end(); ++iter) {
-            const Object *light = (*iter);
-            const Sphere *point_light = dynamic_cast<const Sphere *>(light);
-            const Triangle *triangle_light = dynamic_cast<const Triangle *>(light);
-            if (point_light) {
-                // check if there are other surfaces blocking the light
-                trace_rst.color += castRay(trace_rst.hit_object, point_light, ray, hit_point, N, point_light->getCenter());
-            } else if (triangle_light){
-                Color area_cast(0);
-                for (int i = 0; i < SAMPLE_AREA_LIGHT; ++i) {
-                    float alpha = uni(gen);
-                    float beta = uni(gen) * (1 - alpha);
-                    VecF mix = triangle_light->getMixPoint(alpha, beta);
-                    area_cast += castRay(trace_rst.hit_object, triangle_light, ray, hit_point, N, mix);
+        if (trace_rst.hit_object->getMaterial().getDiffuse_prob() > 0){
+            if (config.illumination_type == RAY_TRACING_WITH_CAST || depth > 3) {
+                for (ObjectList::const_iterator iter = light_list.begin(); iter != light_list.end(); ++iter) {
+                    const Object *light = (*iter);
+                    const Sphere *point_light = dynamic_cast<const Sphere *>(light);
+                    const Triangle *triangle_light = dynamic_cast<const Triangle *>(light);
+                    if (point_light) {
+                        // check if there are other surfaces blocking the light
+                        trace_rst.color += castRay(trace_rst.hit_object, point_light, ray, hit_point, N,
+                                                   point_light->getCenter());
+                    } else if (triangle_light) {
+                        Color area_cast(0);
+                        for (int i = 0; i < SAMPLE_AREA_LIGHT; ++i) {
+                            float alpha = uni(gen);
+                            float beta = uni(gen) * (1 - alpha);
+                            VecF mix = triangle_light->getMixPoint(alpha, beta);
+                            area_cast += castRay(trace_rst.hit_object, triangle_light, ray, hit_point, N, mix);
+                        }
+                        area_cast /= SAMPLE_AREA_LIGHT;
+                        trace_rst.color += area_cast;
+                    }
                 }
-                area_cast /= SAMPLE_AREA_LIGHT;
-                trace_rst.color += area_cast;
+            } else {
+                VecF Nx, Nz, Ny = N;
+                if (fabs(Ny.x) > fabs(Ny.y)) Nx = VecF(Ny.z, 0, -Ny.x);
+                else Nx = VecF(0, -Ny.z, Ny.y);
+                Nx.normalize();
+                Nz = Ny.cross(Nx);
+                Nz.normalize();
+                for (int i = 0; i < config.diffuse_sample_num; ++i) {
+                    VecF sample = uniformHemisphereSample();
+                    VecF sample_transformed = VecF(
+                            sample.x * Nx.x + sample.y * Ny.x + sample.z * Nz.x,
+                            sample.x * Nx.y + sample.y * Ny.y + sample.z * Nz.y,
+                            sample.x * Nx.z + sample.y * Ny.z + sample.z * Nz.z
+                    );
+                    TraceResult diffuse = rayTrace(Ray(hit_point + sample_transformed * EPSILON, sample_transformed), r_index, depth + 1, config);
+                    trace_rst.color += trace_rst.hit_object->getMaterial().getDiffuse_prob() *
+                                        trace_rst.hit_object->getMaterial().getIntrinsic_color()
+                                      * diffuse.color / config.diffuse_sample_num;
+                }
             }
         }
         // reflection
         float reflection = trace_rst.hit_object->getMaterial().getReflection_prob();
-        if (reflection > 0){
+        if (reflection > 0 && min_dist_result.result != INSIDE){
             VecF R = ray.getDirection() - 2.0f * ray.getDirection().dot(N) * N;
             if (depth < config.num_trace_depth){
                 Engine::TraceResult reflect_result = rayTrace(Ray(hit_point + R * EPSILON, R), r_index, depth + 1, config);
@@ -159,7 +183,7 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
             float index_next = trace_rst.hit_object->getMaterial().getRefraction_index();
             if (min_dist_result.result == INSIDE){
                 index_next = 1.0;
-                N *= -1.0f;
+//                N *= -1.0f;
             }
             float n = r_index / index_next;
             float cosI = -N.dot(ray.getDirection());
@@ -170,9 +194,10 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
                 float dist = refract_result.dist;
                 VecF beer = ( (-trace_rst.hit_object->getColor(hit_point) + 1) * (-0.02) * dist).exp();
                 trace_rst.color += refraction * refract_result.color * beer;
+//                cout << refract_result.color << endl;
             }
         }
-    } else {
+    } else if (config.illumination_type == PURE_MCPT) {
         // MCPT model
         float p = uni(gen);
         if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()){
@@ -194,7 +219,8 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
             trace_rst.color = trace_rst.hit_object->getMaterial().getIntrinsic_color()
                               * diffuse.color / trace_rst.hit_object->getMaterial().getDiffuse_prob();
         } else if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()
-                       + trace_rst.hit_object->getMaterial().getReflection_prob()){
+                       + trace_rst.hit_object->getMaterial().getReflection_prob()
+                   && min_dist_result.result != INSIDE){
             // do reflection
             if (depth < config.num_trace_depth){
                 VecF R = ray.getDirection() - 2.0f * ray.getDirection().dot(N) * N;
@@ -203,13 +229,12 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
             }
         } else if  (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()
                         + trace_rst.hit_object->getMaterial().getReflection_prob()
-                        + trace_rst.hit_object->getMaterial().getRefraction_prob()){
+                        + trace_rst.hit_object->getMaterial().getRefraction_prob() || min_dist_result.result == INSIDE){
             // do refraction
             if (depth < config.num_trace_depth){
                 float index_next = trace_rst.hit_object->getMaterial().getRefraction_index();
                 if (min_dist_result.result == INSIDE){
                     index_next = 1.0;
-                    N *= -1.0f;
                 }
                 float n = r_index / index_next;
                 float cosI = -N.dot(ray.getDirection());
@@ -251,6 +276,8 @@ void Engine::render(TraceConfig& config) {
         scene->castTest("../models/twist.obj");
     } else if (config.test == "teapot_mesh"){
         scene->castTest("../models/teapot.obj");
+    } else if (config.test == "mix_twist_mesh"){
+        scene->MixTest("../models/twist.obj");
     }
     else{
         scene->CornellBox();
@@ -260,6 +287,10 @@ void Engine::render(TraceConfig& config) {
 
     std::atomic<int> cnt_rendered;
     moodycamel::ConcurrentQueue<std::pair<int, int>> q;
+
+    const VecF x_sub_range =  dx / (float)config.sub_pixel;
+    const VecF y_sub_range =  dy / (float)config.sub_pixel;
+
     cnt_rendered = 0;
     auto func = [&] {
         for (std::pair<int, int> item; ;) {
@@ -271,17 +302,14 @@ void Engine::render(TraceConfig& config) {
 
             Color collect(0);
 
-            VecF x_sub_range =  dx / (float)SAMPLE_SUB_PIX;
-            VecF y_sub_range =  dy / (float)SAMPLE_SUB_PIX;
-            for (int i = 0; i < SAMPLE_SUB_PIX; ++i) {
-                for (int j = 0; j < SAMPLE_SUB_PIX; ++j) {
-                    for (int k = 0; k < SAMPLENUM; ++k) {
+            for (int i = 0; i < config.sub_pixel; ++i) {
+                for (int j = 0; j < config.sub_pixel; ++j) {
+                    for (int k = 0; k < config.sample_num; ++k) {
                         VecF tweak_x = uni(gen) * x_sub_range;
                         VecF tweak_y = uni(gen) * y_sub_range;
-//                        VecF dir = VecF(sx + i * x_sub_range + tweak_x, sy + j * y_sub_range + tweak_y, 0) - view_point;
                         VecF dir = target + (float)i * x_sub_range + tweak_x + (float)j * y_sub_range + tweak_y - from;
                         TraceResult pixel = rayTrace(Ray(from, dir), 1, 1, config);
-                        collect += pixel.color / (float)(SAMPLE_SUB_PIX * SAMPLE_SUB_PIX * SAMPLENUM);
+                        collect += pixel.color / (float)(config.sub_pixel * config.sub_pixel * config.sample_num);
                     }
                 }
             }

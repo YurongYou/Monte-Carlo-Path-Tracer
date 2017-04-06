@@ -94,16 +94,26 @@ public:
         Material::refraction_index = refraction_index;
     }
 
+    float getKs() const {
+        return Ks;
+    }
+
+    void setKs(float Ks) {
+        Material::Ks = Ks;
+    }
+
+
 private:
     Color emission;
     Color intrinsic_color;
     float diffuse_prob;
     float reflection_prob;
     float refraction_prob;
-
     float base_reflection_rate;
-
     float refraction_index;
+
+    // for casting
+    float Ks;
 };
 
 // simple isotropic objects

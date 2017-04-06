@@ -25,8 +25,9 @@ public:
         int count_face = 0;
         std::vector<int> count_normal;
         Material triangle_material = Material();
-        triangle_material.setDiffuse_prob(0.6f);
-        triangle_material.setIntrinsic_color( WHITE );
+        triangle_material.setDiffuse_prob(1.0f);
+        triangle_material.setKs(0.8f);
+        triangle_material.setIntrinsic_color( CYAN );
         // null point (to deal with the 1-base problem)
         count_normal.push_back(0);
         scene.mesh.points.push_back(VecF(0, 0, 0));

@@ -16,6 +16,7 @@ public:
     void CornellBox();
     void MeshTest(std::string fname);
     void castTest(std::string file);
+    void MixTest(std::string file);
     const ObjectList &getObject_list() const {
         return object_list;
     }

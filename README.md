@@ -24,9 +24,9 @@ CMake version 3.5.1+
     make
 ```
 ### Rendering Images
-1. Cornell Box
+1. Box with ball
     * Global Illumination with Monte Carlo Path Tracing
     * with color bleeding, transparent object, soft shadow effects
-    * run with
+    * all diffuse surfaces are Lambertian surface
 2.
 
