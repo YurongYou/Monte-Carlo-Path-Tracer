@@ -49,7 +49,7 @@ cd bin
 			[-view <position of viewpoint> <position of target>]
 ```
 * To render with MCPT, please toggle `-MCPT true`.
-* The frame is set to be 5 unit in front of the view point and not tilted. 
+* The frame is set to be 5 units in front of the view point and not tilted. 
 * The default size of the rendered image is `640x480`, and if specified in cli options, `height / width` should be `3 / 4`.
 
 
@@ -57,7 +57,7 @@ cd bin
 1. Box with balls
     * Global Illumination with Monte Carlo Path Tracing
     * with **color bleeding**, **transparent object**, **soft shadow** and **caustic** effects
-    * all diffuse surfaces are Lambertian surfaces
+    * all diffuse surfaces are [Lambertian surfaces](https://en.wikipedia.org/wiki/Lambertian_reflectance)
     * render with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (20 cores) in 5731.2s
     
     	![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_MCPT_highres.jpg?token=AM-ptWp2Mz87K9diVOlomkYMJkU9ndcRks5Y7ujlwA%3D%3D)
@@ -67,6 +67,7 @@ cd bin
 2. Twist with ball
 	* Global Illumination with Monte Carlo Path Tracing
 	* with **color bleeding**, **soft shadow** effects
+	* .obj 3D model (the twist)
 	* all diffuse surfaces are Lambertian surfaces
 	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 11958.08s
 		

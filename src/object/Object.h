@@ -115,8 +115,6 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-//    VecF getNormal(const VecF &pos) const override;
-
     VecF getMixPoint(const float& alpha, const float& beta) const;
 
     Color getColor(const VecF &pos) const override;
@@ -124,12 +122,6 @@ public:
 private:
     VecF points[3];
     VecF normal;
-};
-
-class Mesh {
-public:
-    std::vector<VecF> points;
-    std::vector<VecF> normal;
 };
 
 class MeshTriangle: public Object{
@@ -146,8 +138,6 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-//    VecF getNormal(const VecF &pos) const override;
-
     const VecF &getLocal_normal() const {
         return local_normal;
     }
@@ -158,6 +148,26 @@ private:
     int p0, p1, p2;
     const Mesh* mesh;
     VecF local_normal;
+};
+
+class AABB: public Object {
+public:
+    AABB(const string &name, const VecF &pos, const VecF &size) : Object(Material(), name),
+                                                                  pos(pos), size(size) {}
+
+    IntersectResult intersect(const Ray &ray) const override;
+
+    Color getColor(const VecF &pos) const override;
+
+private:
+    // pos should be left-bottom corner of the AABB
+    VecF pos, size;
+};
+
+class Mesh {
+public:
+    std::vector<VecF> points;
+    std::vector<VecF> normal;
 };
 
 #endif //RAYTRACING_OBJECT_H

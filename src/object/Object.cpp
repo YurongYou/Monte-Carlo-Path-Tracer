@@ -31,18 +31,8 @@ Color Sphere::getColor(const VecF &pos) const {
     return this->getMaterial().getIntrinsic_color();
 }
 
-Color Triangle::getColor(const VecF &pos) const {
-    // fixme: implement triangle texture mapping
-    return this->getMaterial().getIntrinsic_color();
-}
-
-Color MeshTriangle::getColor(const VecF &pos) const {
-    // fixme: implement mesh triangle texture mapping
-    return this->getMaterial().getIntrinsic_color();
-}
-
 IntersectResult Plane::intersect(const Ray &ray) const {
-    IntersectResult rst;
+    IntersectResult rst = IntersectResult();
     float d = normal.dot(ray.getDirection());
     if (fabsf(d) > EPSILON) {
         float dist = (shift - normal.dot(ray.getOrigin())) / d;
@@ -54,17 +44,6 @@ IntersectResult Plane::intersect(const Ray &ray) const {
     }
     return rst;
 }
-
-//Color Plane::getColor(VecF &pos) const override {
-//    if (this->material.getTexture()){
-//        VecF diff = pos - normal * shift;
-//        float u = diff.dot(axis[0]);
-//        float v = diff.dot(axis[1]);
-//        return this->material.getTexture()->get_color(u, v);
-//    } else {
-//        return this->getMaterial().getIntrinsic_color();
-//    }
-//}
 
 Color Plane::getColor(const VecF &pos) const {
     if (this->material.getTexture()){
@@ -120,11 +99,13 @@ IntersectResult Triangle::intersect(const Ray &ray) const {
     return rst;
 }
 
+Color Triangle::getColor(const VecF &pos) const {
+    // fixme: implement triangle texture mapping
+    return this->getMaterial().getIntrinsic_color();
+}
+
 VecF Triangle::getMixPoint(const float &alpha, const float &beta) const{
-//    assert(alpha >= 0 && alpha <= 1);
-//    assert(beta >= 0 && beta <= 1);
     float gamma = 1 - alpha - beta;
-//    assert(gamma >= 0);
     return alpha * points[0] + beta * points[1] + gamma * points[2];
 }
 
@@ -140,7 +121,53 @@ IntersectResult MeshTriangle::intersect(const Ray &ray) const {
                 temp_rst.u * mesh->normal[p1] +
                 temp_rst.v * mesh->normal[p2]);
         rst.normal.normalize();
-//        rst.normal = local_normal;
     }
     return rst;
+}
+
+Color MeshTriangle::getColor(const VecF &pos) const {
+    // fixme: implement mesh triangle texture mapping
+    return this->getMaterial().getIntrinsic_color();
+}
+
+IntersectResult AABB::intersect(const Ray &ray) const {
+    IntersectResult rst = IntersectResult();
+    VecF dir = ray.getDirection(), origin = ray.getOrigin();
+    VecF v1 = pos, v2 = pos + size;
+    float dist[6] = {0};
+    VecF ip[6];
+    if (fabsf(dir.x) > EPSILON) {
+        float rc = 1.0f / dir.x;
+        dist[0] = (v1.x - origin.x) * rc;
+        dist[3] = (v2.x - origin.x) * rc;
+    }
+    if (fabsf(dir.y) > EPSILON) {
+        float rc = 1.0f / dir.y;
+        dist[1] = (v1.y - origin.y) * rc;
+        dist[4] = (v2.y - origin.y) * rc;
+    }
+    if (fabsf(dir.z) > EPSILON) {
+        float rc = 1.0f / dir.z;
+        dist[2] = (v1.z - origin.z) * rc;
+        dist[5] = (v2.z - origin.z) * rc;
+    }
+    for (int i = 0; i < 6; i++){
+        if (dist[i] > 0) {
+            ip[i] = origin + dist[i] * dir;
+            if ((ip[i].x > (v1.x - EPSILON)) && (ip[i].x < (v2.x + EPSILON)) &&
+                (ip[i].y > (v1.y - EPSILON)) && (ip[i].y < (v2.y + EPSILON)) &&
+                (ip[i].z > (v1.z - EPSILON)) && (ip[i].z < (v2.z + EPSILON))) {
+                if (rst.result == MISS || rst.dist > dist[i]) {
+                    rst.dist = dist[i];
+                    rst.result = HIT;
+                }
+            }
+        }
+    }
+    return rst;
+}
+
+Color AABB::getColor(const VecF &pos) const {
+    std::cerr << "AABB should not have any color" << std::endl;
+    exit(1);
 }
