@@ -13,27 +13,40 @@ An implementation on ray tracing algorithm for CS230 (Virtual Reality and Intera
 
 ## System requirement
 Ubuntu 14.04+
-CMake version 3.5.1+
+CMake version 3.2.2+
+
+## Project Structure
 
 ## Usages
-### build
+### Build
 ```
-    mkdir bin
-    cd bin
-    cmake ..
-    make
+mkdir bin && cd bin
+cmake .. && make
 ```
-### Rendering Images
+
+### Run
+```
+cd bin
+./RayTracing -MCPT true [-test_case <twist_mesh|teapot_mesh|mix_twist_mesh>] [-size <height> <width>] [-view <position of viewpoint> <position of target>]
+```
+
+## Demos
 1. Box with ball
     * Global Illumination with Monte Carlo Path Tracing
-    * with color bleeding, transparent object, soft shadow effects
+    * with **color bleeding**, **transparent object**, **soft shadow** effects
     * all diffuse surfaces are Lambertian surface
     * using Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (20 cores) in 5731.2s
-    ![]()
-2.
-
+    ![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_MCPT_highres.jpg?token=AM-ptWp2Mz87K9diVOlomkYMJkU9ndcRks5Y7ujlwA%3D%3D)
+	* run with
+			
+			./RayTracing -MCPT true
+	
 ## Reference
 * https://www.scratchapixel.com/
-* Shirley, P., & Morley, R. K. (2008). Realistic ray tracing. AK Peters, Ltd..
 * http://www.flipcode.com/archives/Raytracing_Topics_Techniques-Part_1_Introduction.shtml
+* Shirley, P., & Morley, R. K. (2008). Realistic ray tracing. AK Peters, Ltd..
+
+## TODOs
+* [ ] Texture
+* [ ] bounding box speed up
 
