@@ -9,6 +9,7 @@ An implementation on ray tracing algorithm for CS230 (Virtual Reality and Intera
 * Global illumination with Monte Carlo Path Tracing
 * Multi-thread rendering
 * load .obj model
+* Anti-aliasing
 * Simple texture mapping
 
 ## System requirement
