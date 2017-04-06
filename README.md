@@ -13,6 +13,7 @@ An implementation on realistic ray tracing algorithm for CS230 (Virtual Reality 
 * load .obj model
 * Anti-aliasing
 * Simple texture mapping on plane
+* Simple bounding box speed up
 
 ## System requirement
 Ubuntu v14.04+
@@ -63,15 +64,16 @@ cd bin
     	![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_MCPT_highres.jpg?token=AM-ptWp2Mz87K9diVOlomkYMJkU9ndcRks5Y7ujlwA%3D%3D)
 	* run with
 			
-			./RayTracing -MCPT true
-2. Twist with ball
+			./RayTracing -MCPT true -view 0 0 -5 0 0 0
+2. Twist with ball, and texture
 	* Global Illumination with Monte Carlo Path Tracing
 	* with **color bleeding**, **soft shadow** effects
 	* .obj 3D model (the twist)
 	* all diffuse surfaces are Lambertian surfaces
+	* texture mapping (ground and the back wall)
 	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 6422.3s
 		
-		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_with_obj_2.jpg)
+		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_texture_obj.jpg)
 	* run with
 			
 			./RayTracing -MCPT true -test_case mix_twist_mesh
@@ -84,5 +86,5 @@ cd bin
 
 ## TODOs
 * [x] Texture
-* [ ] bounding box speed up
+* [x] bounding box speed up
 
