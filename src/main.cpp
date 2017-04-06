@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
             ++i;
             if (strncmp(argv[i], "true", 4) == 0){
                 config.illumination_type = PURE_MCPT;
-                config.sample_num = 8;
+                config.sample_num = 1024;
             }
             else if (strncmp(argv[i], "mix", 3) ==0 ){
                 config.illumination_type = MIX;

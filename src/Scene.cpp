@@ -139,7 +139,7 @@ void Scene::MixTest(std::string file) {
 
     Material plane_material = Material();
     Material triangle_light = Material();
-    triangle_light.setEmission(WHITE);
+    triangle_light.setEmission(WHITE * 3);
     addObject(new Triangle(triangle_light, "triangle1",
                            VecF(x1, high, z1), VecF(x1, high, z2), VecF(x2, high, z1)));
     addObject(new Triangle(triangle_light, "triangle2",
@@ -147,7 +147,9 @@ void Scene::MixTest(std::string file) {
 
     plane_material.setDiffuse_prob(1.0f);
     plane_material.setIntrinsic_color( WHITE * 0.4 );
+    plane_material.setTexture(new ImgTexture("/Users/youyurong/CLionProjects/RayTracing/textures/ground.png", 40));
     addObject(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
+    plane_material.setTexture(NULL);
 
     plane_material.setIntrinsic_color( GREEN );
     addObject(new Plane(plane_material, "left wall", VecF(1, 0, 0), left));
@@ -156,7 +158,9 @@ void Scene::MixTest(std::string file) {
     addObject(new Plane(plane_material, "right wall", VecF(-1, 0, 0), -right));
 
     plane_material.setIntrinsic_color( WHITE );
+    plane_material.setTexture(new GridTexture(WHITE, BLACK, 0.5));
     addObject(new Plane(plane_material, "back wall", VecF(0, 0, -1), -back));
+    plane_material.setTexture(NULL);
 
     plane_material.setIntrinsic_color( WHITE * 0.8 );
     addObject(new Plane(plane_material, "ceiling", VecF(0, -1, 0), -high - 0.05f));
