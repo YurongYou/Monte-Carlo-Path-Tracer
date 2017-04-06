@@ -23,7 +23,7 @@ public:
 
 class PureTexture: public Texture{
 public:
-    PureTexture(const Color &color = WHITE) : color(color) {}
+    PureTexture(const Color &color) : color(color) {}
 
     Color get_color(float u, float v) const override {
         return color;

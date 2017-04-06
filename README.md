@@ -20,18 +20,17 @@ CMake v3.2.2+
 
 ## Project Structure
 ```
-models/ 			# 3D models in .obj files for rendering
-results/ 			# rendering results
-vendor/ 			# third-party library (cameron314/concurrentqueue for multi-thread rendering)
-src/				# source code
-	/object			# dealing with 3D objects
-	/utility 		# basic utility objects / functions / constants, including objLoader, ray class, vector class and some global constants
- 	Engine.cpp		# core rendering engine
- 	Engine.h		# header file for core rendering engine
- 	scene.cpp		# 3D scene builder
- 	scene.h			# header file for 3D scene builder
- 	main.cpp		# entrance 	
-	
+models/ 		# 3D models in .obj files for rendering
+results/ 		# rendering results
+vendor/ 		# third-party library (cameron314/concurrentqueue for multi-thread rendering)
+src/			# source code
+	/object		# dealing with 3D objects
+	/utility 	# basic utility objects / functions / constants, including objLoader, ray class, vector class and some global constants
+ 	Engine.cpp	# core rendering engine
+ 	Engine.h	# header file for core rendering engine
+ 	scene.cpp	# 3D scene builder
+ 	scene.h		# header file for 3D scene builder
+ 	main.cpp	# entrance 	
 ```
 
 ## Usages
@@ -45,9 +44,9 @@ cmake .. && make
 ```
 cd bin
 ./RayTracing	[-MCPT <true|false|mix>] 
-				[-test_case <twist_mesh|teapot_mesh|mix_twist_mesh>] 
-				[-size <height> <width>] 
-				[-view <position of viewpoint> <position of target>]
+			[-test_case <twist_mesh|teapot_mesh|mix_twist_mesh>] 
+			[-size <height> <width>] 
+			[-view <position of viewpoint> <position of target>]
 ```
 * To render with MCPT, please toggle `-MCPT true`.
 * The frame is set to be 5 unit in front of the view point and not tilted. 

@@ -26,6 +26,21 @@ IntersectResult Sphere::intersect(const Ray &ray) const {
     return rst;
 }
 
+Color Sphere::getColor(const VecF &pos) const {
+    // fixme: implement sphere texture mapping
+    return this->getMaterial().getIntrinsic_color();
+}
+
+Color Triangle::getColor(const VecF &pos) const {
+    // fixme: implement triangle texture mapping
+    return this->getMaterial().getIntrinsic_color();
+}
+
+Color MeshTriangle::getColor(const VecF &pos) const {
+    // fixme: implement mesh triangle texture mapping
+    return this->getMaterial().getIntrinsic_color();
+}
+
 IntersectResult Plane::intersect(const Ray &ray) const {
     IntersectResult rst;
     float d = normal.dot(ray.getDirection());
