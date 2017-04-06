@@ -1,11 +1,13 @@
-# RayTracing
-An implementation on ray tracing algorithm for CS230 (Virtual Reality and Interactive 3D Graphics Display), ACM Class, SJTU
+# MCPT Ray Tracer
+An implementation on realistic ray tracing algorithm for CS230 (Virtual Reality and Interactive 3D Graphics Display).
+
 
 ## Features
 * Supported effects:
-    * color bleeding
-    * transparent object
-    * soft shadow
+    * **color bleeding**
+    * **transparent object**
+    * **soft shadow**
+    * **caustic**
 * Global illumination with Monte Carlo Path Tracing
 * Multi-thread rendering
 * load .obj model
@@ -14,10 +16,23 @@ An implementation on ray tracing algorithm for CS230 (Virtual Reality and Intera
 
 ## System requirement
 Ubuntu v14.04+
-
 CMake v3.2.2+
 
 ## Project Structure
+```
+models/ 			# 3D models in .obj files for rendering
+results/ 			# rendering results
+vendor/ 			# third-party library (cameron314/concurrentqueue for multi-thread rendering)
+src/				# source code
+	/object			# dealing with 3D objects
+	/utility 		# basic utility objects / functions / constants, including objLoader, ray class, vector class and some global constants
+ 	Engine.cpp		# core rendering engine
+ 	Engine.h		# header file for core rendering engine
+ 	scene.cpp		# 3D scene builder
+ 	scene.h			# header file for 3D scene builder
+ 	main.cpp		# entrance 	
+	
+```
 
 ## Usages
 ### Build
@@ -29,13 +44,20 @@ cmake .. && make
 ### Run
 ```
 cd bin
-./RayTracing -MCPT true [-test_case <twist_mesh|teapot_mesh|mix_twist_mesh>] [-size <height> <width>] [-view <position of viewpoint> <position of target>]
+./RayTracing	[-MCPT <true|false|mix>] 
+				[-test_case <twist_mesh|teapot_mesh|mix_twist_mesh>] 
+				[-size <height> <width>] 
+				[-view <position of viewpoint> <position of target>]
 ```
+* To render with MCPT, please toggle `-MCPT true`.
+* The frame is set to be 5 unit in front of the view point and not tilted. 
+* The default size of the rendered image is `640x480`, and if specified in cli options, `height / width` should be `3 / 4`.
+
 
 ## Demos
-1. Box with ball
+1. Box with balls
     * Global Illumination with Monte Carlo Path Tracing
-    * with **color bleeding**, **transparent object**, **soft shadow** effects
+    * with **color bleeding**, **transparent object**, **soft shadow** and **caustic** effects
     * all diffuse surfaces are Lambertian surfaces
     * render with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (20 cores) in 5731.2s
     
@@ -49,11 +71,16 @@ cd bin
 	* all diffuse surfaces are Lambertian surfaces
 	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 11958.08s
 		
-		![]()
+		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_with_obj.jpg)
+	* run with
+			
+			./RayTracing -MCPT true -test_case mix_twist_mesh
+			
 ## Reference
 * https://www.scratchapixel.com/
 * http://www.flipcode.com/archives/Raytracing_Topics_Techniques-Part_1_Introduction.shtml
 * Shirley, P., & Morley, R. K. (2008). Realistic ray tracing. AK Peters, Ltd..
+* [wiki: path tracing](https://en.wikipedia.org/wiki/Path_tracing)
 
 ## TODOs
 * [x] Texture
