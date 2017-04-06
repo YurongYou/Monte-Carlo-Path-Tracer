@@ -161,49 +161,16 @@ void Scene::MixTest(std::string file) {
     plane_material.setIntrinsic_color( WHITE * 0.8 );
     addObject(new Plane(plane_material, "ceiling", VecF(0, -1, 0), -high - 0.05f));
 
-//    float high = 10;
-//    float low = 0;
-//    float left = -3;
-//    float x1 = -2, z1 = -4.0f, x2 = 2, z2 = -1.0f;
-//
-//    Material triangle_light = Material();
-//    triangle_light.setEmission(WHITE);
-//    addObject(new Triangle(triangle_light, "triangle1",
-//                           VecF(x1, high, z1), VecF(x1, high, z2), VecF(x2, high, z1)));
-//    addObject(new Triangle(triangle_light, "triangle2",
-//                           VecF(x2, high, z1), VecF(x1, high, z2), VecF(x2, high, z2)));
-
-//    Material point_light = Material();
-//    point_light.setEmission( WHITE * 0.3);
-//    addObject(new Sphere(point_light, "point light for test", VecF(2 + 2, 10, -5.0f), 0.1f));
-//    addObject(new Sphere(point_light, "point light for test", VecF(2 - 2, 10, -5.0f), 0.1f));
-//    addObject(new Sphere(point_light, "point light for test", VecF(2 + 1, 10, -5.0f), 0.1f));
-//    addObject(new Sphere(point_light, "point light for test", VecF(2 - 1, 10, -5.0f), 0.1f));
-//    addObject(new Sphere(point_light, "point light for test", VecF(2, 10, -5.0f), 0.1f));
-
-//    plane_material.setKs(0.8f);
-//    plane_material.setIntrinsic_color( WHITE * 0.5 );
-//    addObject(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
-
     Material sphere_material = Material();
     sphere_material.clear();
     sphere_material.setIntrinsic_color(WHITE);
     sphere_material.setDiffuse_prob(0.0f);
     sphere_material.setRefraction_index(1.33f);
-    sphere_material.setRefraction_prob(0.6f);
-    sphere_material.setReflection_prob(0.4f);
+    sphere_material.setRefraction_prob(0.95f);
+    sphere_material.setReflection_prob(0.05f);
     float radius1 = 1.6f;
     addObject(new Sphere(sphere_material, "diffuse sphere",
                          VecF(5, low + radius1, -2), radius1));
-
-//    sphere_material.clear();
-//    sphere_material.setDiffuse_prob(1.0f);
-//    sphere_material.setKs(0.8f);
-//    sphere_material.setIntrinsic_color( CYAN );
-////    sphere_material.setReflection_prob(0.5f);
-//    float radius2 = 2.0f;
-//    addObject(new Sphere(sphere_material, "diffuse sphere",
-//                         VecF(0, low + radius2, 0), radius2));
 
 
     ObjLoader::loadObj(file, *this);

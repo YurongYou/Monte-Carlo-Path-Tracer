@@ -1,4 +1,3 @@
 .idea/
 cmake-build-debug/
 models/.mlp
-results/
