@@ -45,13 +45,19 @@ cmake .. && make
 ```
 cd bin
 ./RayTracing	[-MCPT <true|false|mix>] 
-			[-test_case <twist_mesh|teapot_mesh|mix_twist_mesh>] 
+			[-test_case <twist_mesh|teapot_mesh|mix_twist_mesh|load_obj>] 
 			[-size <height> <width>] 
 			[-view <position of viewpoint> <position of target>]
+			[-obj 	 <path of .obj file>]
+			[-meshtype <diff> <ks> <refl>]
+			[-sample_num <number of sample per subpixel (default 1024)>]
 ```
 * To render with MCPT, please toggle `-MCPT true`.
 * The frame is set to be 5 units in front of the view point and not tilted. 
 * The default size of the rendered image is `640x480`, and if specified in cli options, `height / width` should be `3 / 4`.
+* To display a .obj 3D model, please run with
+		
+		`-test_case load_obj -obj <path of .obj file>`
 
 
 ## Demos
@@ -71,7 +77,7 @@ cd bin
 	* .obj 3D model (the twist)
 	* all diffuse surfaces are Lambertian surfaces
 	* texture mapping (ground and the back wall)
-	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 6422.3s
+	* render with Intel Xeon E5-2666 v3 (Haswell) (36 cores) on AWS EC2 c4.8xlarge in 1206.01s
 		
 		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_texture_obj.jpg)
 	* run with
@@ -79,9 +85,14 @@ cd bin
 			./RayTracing -MCPT true -test_case mix_twist_mesh -view 2 4 -12 2 4 0
 			
 3. Box with teapot
+	* Global Illumination with Monte Carlo Path Tracing
+	* with **color bleeding**, **soft shadow** effects
+	* .obj 3D model (the twist) (more meshes)
+	* all diffuse surfaces are Lambertian surfaces
+	* texture mapping (ground and the back wall)
 	* run with
 		
-			./RayTracing -MCPT true -test_case load_obj -obj ../models/teapot2.obj -meshtype 0.0 0.8 1.0 -sample_num 2
+			./RayTracing -MCPT true -test_case load_obj -obj ../models/teapot2.obj -meshtype 0.0 0.8 1.0
 
 ## Further Possible Improvements
 * MCPT with direct ray casting
