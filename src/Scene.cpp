@@ -5,14 +5,11 @@
 #include <fstream>
 #include <cstring>
 #include "Scene.h"
-#include "utility/ObjLoader.h"
 
 void Scene::CornellBox(){
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
-        mesh.normal.clear();
-        mesh.points.clear();
     }
 
     Material plane_material = Material();
@@ -76,8 +73,6 @@ void Scene::castTest(std::string file){
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
-        mesh.normal.clear();
-        mesh.points.clear();
     }
 
     Material plane_material = Material();
@@ -119,15 +114,14 @@ void Scene::castTest(std::string file){
 //    float radius1 = 1.0f;
 //    addObject(new Sphere(sphere_material, "refractive sphere",
 //                         VecF(0,0,4), radius1));
-    ObjLoader::loadObj(file, *this);
+    addObject(new Mesh("mesh", file));
+//    ObjLoader::loadObj(file, *this);
 }
 
 void Scene::MixTest(std::string file) {
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
-        mesh.normal.clear();
-        mesh.points.clear();
     }
 
     float high = 10;
@@ -147,7 +141,7 @@ void Scene::MixTest(std::string file) {
 
     plane_material.setDiffuse_prob(1.0f);
     plane_material.setIntrinsic_color( WHITE * 0.4 );
-    plane_material.setTexture(new ImgTexture("/Users/youyurong/CLionProjects/RayTracing/textures/ground.png", 40));
+    plane_material.setTexture(new ImgTexture("../textures/ground.png", 40));
     addObject(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
     plane_material.setTexture(NULL);
 
@@ -170,14 +164,14 @@ void Scene::MixTest(std::string file) {
     sphere_material.setIntrinsic_color(WHITE);
     sphere_material.setDiffuse_prob(0.0f);
     sphere_material.setRefraction_index(1.33f);
-    sphere_material.setRefraction_prob(0.95f);
-    sphere_material.setReflection_prob(0.05f);
+    sphere_material.setRefraction_prob(1.0f);
+    sphere_material.setReflection_prob(0.00f);
     float radius1 = 1.6f;
     addObject(new Sphere(sphere_material, "diffuse sphere",
                          VecF(5, low + radius1, -2), radius1));
 
 
-    ObjLoader::loadObj(file, *this);
+    addObject(new Mesh("mesh", file));
 }
 
 
@@ -186,8 +180,6 @@ void Scene::simpleTest() {
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
-        mesh.normal.clear();
-        mesh.points.clear();
     }
     float high = 10;
     float low = 0;
@@ -206,7 +198,7 @@ void Scene::simpleTest() {
 
     plane_material.setDiffuse_prob(1.0f);
     plane_material.setIntrinsic_color( WHITE * 0.4 );
-    plane_material.setTexture(new ImgTexture("/Users/youyurong/CLionProjects/RayTracing/textures/ground.png", 40));
+    plane_material.setTexture(new ImgTexture("../textures/ground.png", 40));
     addObject(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
 
     plane_material.setTexture(NULL);

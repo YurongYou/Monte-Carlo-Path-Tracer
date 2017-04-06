@@ -5,7 +5,7 @@
 #ifndef RAYTRACING_CONSTANTS_H
 #define RAYTRACING_CONSTANTS_H
 
-#define EPSILON			    0.001f
+#define EPSILON			    0.00001f
 
 #define SAMPLE_AREA_LIGHT   16
 #define PI	                3.141592653589793238462f

@@ -11,16 +11,22 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <list>
 #include "../utility/common.h"
 #include "Texture.h"
 #include "Material.h"
 
 using std::string;
 
+class Object;
+class Mesh;
+typedef std::list<const Object*> ObjectList;
+
 struct IntersectResult{
     HitType result = MISS;
     float dist = INFDIST;
     VecF normal = NULL;
+    const Object* hit_obj = NULL;
 };
 
 // simple isotropic objects
@@ -32,7 +38,7 @@ public:
 
     virtual IntersectResult intersect(const Ray &ray) const = 0;
 
-//    virtual VecF getNormal(const VecF &pos) const = 0;
+//    virtual VecF getNormal(const VecF &bottom_left) const = 0;
 
     virtual Color getColor(const VecF &pos) const = 0;
 
@@ -61,7 +67,7 @@ public:
 
     IntersectResult intersect(const Ray &ray) const override;
 
-//    VecF getNormal(const VecF &pos) const override;
+//    VecF getNormal(const VecF &bottom_left) const override;
 
     float getRadius2() const {
         return radius2;
@@ -92,7 +98,7 @@ public:
 
     Color getColor(const VecF &pos) const override;
 
-//    VecF getNormal(const VecF &pos) const override;
+//    VecF getNormal(const VecF &bottom_left) const override;
 
 private:
     VecF normal;
@@ -124,17 +130,40 @@ private:
     VecF normal;
 };
 
+class AABB: public Object {
+public:
+    AABB() {}
+    AABB(const string &name, const VecF &pos, const VecF &upper_right) : Object(Material(), name),
+                                                                  bottom_left(pos), upper_right(upper_right) {}
+
+    IntersectResult intersect(const Ray &ray) const override;
+
+    Color getColor(const VecF &pos) const override;
+
+private:
+    // bottom_left should be left-bottom corner of the AABB
+    VecF bottom_left, upper_right;
+};
+
+class Mesh : public Object{
+friend class MeshTriangle;
+public:
+    Mesh(const string &name, const std::string file);
+
+    IntersectResult intersect(const Ray &ray) const override;
+
+    Color getColor(const VecF &pos) const override;
+
+private:
+    std::vector<VecF> points;
+    std::vector<VecF> normal;
+    ObjectList faces;
+    AABB bbox;
+};
+
 class MeshTriangle: public Object{
 public:
-    MeshTriangle(const Material &material, const string &name, int p0, int p1, int p2, const Mesh *mesh) : Object(
-            material, name), p0(p0), p1(p1), p2(p2), mesh(mesh) {
-
-        VecF point0 = mesh->points[p0];
-        VecF point1 = mesh->points[p1];
-        VecF point2 = mesh->points[p2];
-        local_normal = (point1 - point0).cross(point2 - point0);
-        local_normal.normalize();
-    }
+    MeshTriangle(const Material &material, const string &name, int p0, int p1, int p2, const Mesh *mesh);
 
     IntersectResult intersect(const Ray &ray) const override;
 
@@ -148,26 +177,6 @@ private:
     int p0, p1, p2;
     const Mesh* mesh;
     VecF local_normal;
-};
-
-class AABB: public Object {
-public:
-    AABB(const string &name, const VecF &pos, const VecF &size) : Object(Material(), name),
-                                                                  pos(pos), size(size) {}
-
-    IntersectResult intersect(const Ray &ray) const override;
-
-    Color getColor(const VecF &pos) const override;
-
-private:
-    // pos should be left-bottom corner of the AABB
-    VecF pos, size;
-};
-
-class Mesh {
-public:
-    std::vector<VecF> points;
-    std::vector<VecF> normal;
 };
 
 #endif //RAYTRACING_OBJECT_H

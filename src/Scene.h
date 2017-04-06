@@ -33,7 +33,6 @@ public:
 
     ObjectList object_list;
     ObjectList light_list;
-    Mesh mesh;
 };
 
 

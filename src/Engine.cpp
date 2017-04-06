@@ -109,11 +109,11 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
         if (temp_result.result != MISS) {
             if (temp_result.dist < min_dist_result.dist) {
                 min_dist_result = temp_result;
-                trace_rst.hit_object = (*iter);
-                trace_rst.dist = temp_result.dist;
             }
         }
     }
+    trace_rst.hit_object = min_dist_result.hit_obj;
+    trace_rst.dist = min_dist_result.dist;
     if (!trace_rst.hit_object) return trace_rst;
     if (!trace_rst.hit_object->getMaterial().getEmission().isEqual(BLACK)){
         trace_rst.color = trace_rst.hit_object->getMaterial().getEmission();
@@ -298,7 +298,7 @@ void Engine::render(TraceConfig& config) {
     } else if (config.test == "teapot_mesh"){
         scene->castTest("../models/teapot.obj");
     } else if (config.test == "mix_twist_mesh"){
-        scene->MixTest("../models/twist.obj");
+        scene->MixTest("../models/sphere.obj");
     } else if (config.test == "simple"){
         scene->simpleTest();
     }
