@@ -8,12 +8,12 @@ An implementation on ray tracing algorithm for CS230 (Virtual Reality and Intera
     * soft shadow
 * Global illumination with Monte Carlo Path Tracing
 * Multi-thread rendering
-* Support loading .obj model
+* load .obj model
 * Simple texture mapping
 
 ## System requirement
-Ubuntu 14.04+
-CMake version 3.2.2+
+Ubuntu v14.04+
+CMake v3.2.2+
 
 ## Project Structure
 
@@ -35,7 +35,7 @@ cd bin
     * Global Illumination with Monte Carlo Path Tracing
     * with **color bleeding**, **transparent object**, **soft shadow** effects
     * all diffuse surfaces are Lambertian surface
-    * using Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (20 cores) in 5731.2s
+    * render with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (20 cores) in 5731.2s
     ![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_MCPT_highres.jpg?token=AM-ptWp2Mz87K9diVOlomkYMJkU9ndcRks5Y7ujlwA%3D%3D)
 	* run with
 			
