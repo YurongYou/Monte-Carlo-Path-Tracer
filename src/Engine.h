@@ -19,7 +19,7 @@ public:
         int illumination_type = RAY_TRACING_WITH_CAST;
         int sub_pixel = 2;
         int sample_num = 1;
-        int diffuse_sample_num = 1;
+        int diffuse_sample_num = 32;
         std::string test;
 
         TraceConfig() {}

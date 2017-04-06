@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "../utility/common.h"
+#include "Texture.h"
 
 using std::string;
 
@@ -24,12 +25,18 @@ struct IntersectResult{
 class Material {
 public:
     Material() : emission(BLACK), intrinsic_color(WHITE),  diffuse_prob(0.8f),
-                 reflection_prob(0.0f), refraction_prob(0.0f), base_reflection_rate(0.5f), refraction_index(0.0f) {}
+                 reflection_prob(0.0f), refraction_prob(0.0f), base_reflection_rate(0.5f),
+                 refraction_index(0.0f), texture(NULL) {}
 
     const Color &getEmission() const {
         return emission;
     }
 
+    ~Material(){
+        if (texture) {
+            delete texture;
+        }
+    }
 
     void clear(){
         emission = BLACK;
@@ -39,6 +46,9 @@ public:
         refraction_prob = 0.0f;
         base_reflection_rate = 0.5f;
         refraction_index = 0.0f;
+        if (texture) {
+            delete texture;
+        }
     }
 
 public:
@@ -102,6 +112,13 @@ public:
         Material::Ks = Ks;
     }
 
+    Texture *getTexture() const {
+        return texture;
+    }
+
+    void setTexture(Texture *texture) {
+        Material::texture = texture;
+    }
 
 private:
     Color emission;
@@ -111,6 +128,7 @@ private:
     float refraction_prob;
     float base_reflection_rate;
     float refraction_index;
+    Texture* texture;
 
     // for casting
     float Ks;
@@ -127,8 +145,7 @@ public:
 
 //    virtual VecF getNormal(const VecF &pos) const = 0;
 
-    virtual Color getColor(VecF &) const { return material.getIntrinsic_color(); }
-
+    virtual Color getColor(const VecF &pos) const { return material.getIntrinsic_color(); }
 
     const string &getName() const { return name; }
 
@@ -169,15 +186,28 @@ private:
 class Plane : public Object {
 public:
     Plane(const Material &material, const string &name, const VecF &normal, const float &shift) : Object(
-            material, name), normal(normal), shift(shift) {}
+            material, name), normal(normal), shift(shift) {
+        if (!(normal.cross(VecF(0, 1, 0)).isEqual(VecF(0)))){
+            axis[0] = normal.cross(VecF(0, 1, 0));
+        } else {
+            axis[0] = normal.cross(VecF(1, 0, 0));
+        }
+        axis[0].normalize();
+        axis[1] = axis[0].cross(normal);
+        axis[1].normalize();
+    }
 
     IntersectResult intersect(const Ray &ray) const override;
+
+    Color getColor(const VecF &pos) const override;
 
 //    VecF getNormal(const VecF &pos) const override;
 
 private:
     VecF normal;
     float shift;
+    // for texture
+    VecF axis[2];
 };
 
 class Triangle: public Object{

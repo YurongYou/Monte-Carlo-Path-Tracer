@@ -178,24 +178,55 @@ void Scene::MixTest(std::string file) {
 
 
 
-void Scene::MeshTest(std::string file) {
+void Scene::simpleTest() {
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
         mesh.normal.clear();
         mesh.points.clear();
     }
-    ObjLoader::loadObj(file, *this);
-    float x1 = -1.0f, z1 = 0.5f, x2 = 1.0f, z2 = 2.0f;
-    float high = 3;
+    float high = 10;
+    float low = 0;
+    float back = 4;
+    float left = -3 + 2 - 3;
+    float right = 3 + 2 + 3;
+    float x1 = left + 2.0f, z1 = -1.0f, x2 = right - 2.0f, z2 = 2.0f;
+
+    Material plane_material = Material();
     Material triangle_light = Material();
-    triangle_light.setEmission(WHITE * 6);
+    triangle_light.setEmission(WHITE);
     addObject(new Triangle(triangle_light, "triangle1",
                            VecF(x1, high, z1), VecF(x1, high, z2), VecF(x2, high, z1)));
     addObject(new Triangle(triangle_light, "triangle2",
                            VecF(x2, high, z1), VecF(x1, high, z2), VecF(x2, high, z2)));
-    Material plane_material = Material();
+
     plane_material.setDiffuse_prob(1.0f);
-    plane_material.setIntrinsic_color( WHITE * 0.6 );
-    addObject(new Plane(plane_material, "floor", VecF(0, 1, 0), -1.0f));
+    plane_material.setIntrinsic_color( WHITE * 0.4 );
+    plane_material.setTexture(new ImgTexture("/Users/youyurong/CLionProjects/RayTracing/textures/ground.png", 40));
+    addObject(new Plane(plane_material, "floor", VecF(0, 1, 0), low));
+
+    plane_material.setTexture(NULL);
+    plane_material.setIntrinsic_color( GREEN );
+    addObject(new Plane(plane_material, "left wall", VecF(1, 0, 0), left));
+
+    plane_material.setIntrinsic_color( RED );
+    addObject(new Plane(plane_material, "right wall", VecF(-1, 0, 0), -right));
+
+    plane_material.setIntrinsic_color( WHITE );
+    addObject(new Plane(plane_material, "back wall", VecF(0, 0, -1), -back));
+
+    plane_material.setIntrinsic_color( WHITE * 0.8 );
+    plane_material.setTexture(NULL);
+    addObject(new Plane(plane_material, "ceiling", VecF(0, -1, 0), -high - 0.05f));
+
+    Material sphere_material = Material();
+    sphere_material.clear();
+    sphere_material.setIntrinsic_color( CYAN );
+    sphere_material.setDiffuse_prob(1.0f);
+    sphere_material.setRefraction_index(1.33f);
+    sphere_material.setRefraction_prob(0.0f);
+    sphere_material.setReflection_prob(0.0f);
+    float radius1 = 1.6f;
+    addObject(new Sphere(sphere_material, "diffuse sphere",
+                         VecF(5, low + radius1, -2), radius1));
 }

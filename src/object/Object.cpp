@@ -40,6 +40,28 @@ IntersectResult Plane::intersect(const Ray &ray) const {
     return rst;
 }
 
+//Color Plane::getColor(VecF &pos) const override {
+//    if (this->material.getTexture()){
+//        VecF diff = pos - normal * shift;
+//        float u = diff.dot(axis[0]);
+//        float v = diff.dot(axis[1]);
+//        return this->material.getTexture()->get_color(u, v);
+//    } else {
+//        return this->getMaterial().getIntrinsic_color();
+//    }
+//}
+
+Color Plane::getColor(const VecF &pos) const {
+    if (this->material.getTexture()){
+        VecF diff = pos - normal * shift;
+        float u = diff.dot(axis[0]);
+        float v = diff.dot(axis[1]);
+        return this->material.getTexture()->get_color(u, v);
+    } else {
+        return this->getMaterial().getIntrinsic_color();
+    }
+}
+
 struct TriangleIntersectResult{
     IntersectResult result;
     float u, v;
@@ -84,10 +106,10 @@ IntersectResult Triangle::intersect(const Ray &ray) const {
 }
 
 VecF Triangle::getMixPoint(const float &alpha, const float &beta) const{
-    assert(alpha >= 0 && alpha <= 1);
-    assert(beta >= 0 && beta <= 1);
+//    assert(alpha >= 0 && alpha <= 1);
+//    assert(beta >= 0 && beta <= 1);
     float gamma = 1 - alpha - beta;
-    assert(gamma >= 0);
+//    assert(gamma >= 0);
     return alpha * points[0] + beta * points[1] + gamma * points[2];
 }
 

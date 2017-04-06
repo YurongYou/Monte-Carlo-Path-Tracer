@@ -77,7 +77,7 @@ Color Engine::castRay(const Object *obj, const Object *light, const Ray &ray, co
 //            if (dynamic_cast<const MeshTriangle*>(obj)) {
 //                cout << dot << endl;
 //            }
-            collect += diffusion * light->getMaterial().getEmission() * obj->getMaterial().getIntrinsic_color();
+            collect += diffusion * light->getMaterial().getEmission() * obj->getColor(ori);
         }
     }
     if (obj->getMaterial().getKs() > 0.0f) {
@@ -137,10 +137,11 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
                                                    point_light->getCenter());
                     } else if (triangle_light) {
                         Color area_cast(0);
+                        // ref: http://math.stackexchange.com/questions/18686/uniform-random-point-in-triangle
                         for (int i = 0; i < SAMPLE_AREA_LIGHT; ++i) {
-                            float alpha = uni(gen);
-                            float beta = uni(gen) * (1 - alpha);
-                            VecF mix = triangle_light->getMixPoint(alpha, beta);
+                            float r1 = uni(gen);
+                            float r2 = uni(gen);
+                            VecF mix = triangle_light->getMixPoint(1 - sqrtf(r1), sqrtf(r1) * (1 - r2) );
                             area_cast += castRay(trace_rst.hit_object, triangle_light, ray, hit_point, N, mix);
                         }
                         area_cast /= SAMPLE_AREA_LIGHT;
@@ -202,22 +203,44 @@ Engine::TraceResult Engine::rayTrace(const Ray &ray, const float& r_index, const
         float p = uni(gen);
         if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()){
             // do diffusion
-            VecF Nx, Nz, Ny = N;
-            if (fabs(Ny.x) > fabs(Ny.y)) Nx = VecF(Ny.z, 0, -Ny.x);
-            else Nx = VecF(0, -Ny.z, Ny.y);
-            Nx.normalize();
-            Nz = Ny.cross(Nx);
-            Nz.normalize();
-            VecF sample = uniformHemisphereSample();
-            VecF sample_transformed = VecF(
-                    sample.x * Nx.x + sample.y * Ny.x + sample.z * Nz.x,
-                    sample.x * Nx.y + sample.y * Ny.y + sample.z * Nz.y,
-                    sample.x * Nx.z + sample.y * Ny.z + sample.z * Nz.z
-            );
-            assert(sample_transformed.dot(Ny) > -EPSILON);
-            TraceResult diffuse = rayTrace(Ray(hit_point + sample_transformed * EPSILON, sample_transformed), r_index, depth + 1, config);
-            trace_rst.color = trace_rst.hit_object->getMaterial().getIntrinsic_color()
-                              * diffuse.color / trace_rst.hit_object->getMaterial().getDiffuse_prob();
+//            if (depth < 3) {
+                VecF Nx, Nz, Ny = N;
+                if (fabs(Ny.x) > fabs(Ny.y)) Nx = VecF(Ny.z, 0, -Ny.x);
+                else Nx = VecF(0, -Ny.z, Ny.y);
+                Nx.normalize();
+                Nz = Ny.cross(Nx);
+                Nz.normalize();
+                VecF sample = uniformHemisphereSample();
+                VecF sample_transformed = VecF(
+                        sample.x * Nx.x + sample.y * Ny.x + sample.z * Nz.x,
+                        sample.x * Nx.y + sample.y * Ny.y + sample.z * Nz.y,
+                        sample.x * Nx.z + sample.y * Ny.z + sample.z * Nz.z
+                );
+                assert(sample_transformed.dot(Ny) > -EPSILON);
+                TraceResult diffuse = rayTrace(Ray(hit_point + sample_transformed * EPSILON, sample_transformed), r_index, depth + 1, config);
+                trace_rst.color = trace_rst.hit_object->getColor(hit_point)
+                                  * diffuse.color / trace_rst.hit_object->getMaterial().getDiffuse_prob();
+//            } else {
+//                for (ObjectList::const_iterator iter = light_list.begin(); iter != light_list.end(); ++iter) {
+//                    const Object *light = (*iter);
+//                    const Sphere *point_light = dynamic_cast<const Sphere *>(light);
+//                    const Triangle *triangle_light = dynamic_cast<const Triangle *>(light);
+//                    if (point_light) {
+//                        // check if there are other surfaces blocking the light
+//                        trace_rst.color += castRay(trace_rst.hit_object, point_light, ray, hit_point, N,
+//                                                   point_light->getCenter());
+//                    } else if (triangle_light) {
+//                        Color area_cast(0);
+//                        for (int i = 0; i < SAMPLE_AREA_LIGHT; ++i) {
+//                            float alpha = uni(gen);
+//                            float beta = uni(gen) * (1 - alpha);
+//                            VecF mix = triangle_light->getMixPoint(alpha, beta);
+//                            area_cast += castRay(trace_rst.hit_object, triangle_light, ray, hit_point, N, mix) / SAMPLE_AREA_LIGHT;
+//                        }
+//                        trace_rst.color += area_cast;
+//                    }
+//                }
+//            }
         } else if (p < trace_rst.hit_object->getMaterial().getDiffuse_prob()
                        + trace_rst.hit_object->getMaterial().getReflection_prob()
                    && min_dist_result.result != INSIDE){
@@ -270,14 +293,14 @@ void Engine::drawPicture(const Color* canvas) {
 }
 
 void Engine::render(TraceConfig& config) {
-//    scene->MeshTest("/Users/youyurong/CLionProjects/RayTracing/models/teapot.obj");
-//    scene->CornellBox();
     if (config.test == "twist_mesh"){
         scene->castTest("../models/twist.obj");
     } else if (config.test == "teapot_mesh"){
         scene->castTest("../models/teapot.obj");
     } else if (config.test == "mix_twist_mesh"){
         scene->MixTest("../models/twist.obj");
+    } else if (config.test == "simple"){
+        scene->simpleTest();
     }
     else{
         scene->CornellBox();

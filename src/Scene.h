@@ -14,7 +14,7 @@ typedef std::list<const Object*> ObjectList;
 class Scene {
 public:
     void CornellBox();
-    void MeshTest(std::string fname);
+    void simpleTest();
     void castTest(std::string file);
     void MixTest(std::string file);
     const ObjectList &getObject_list() const {

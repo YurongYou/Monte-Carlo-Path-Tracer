@@ -10,7 +10,7 @@ An implementation on ray tracing algorithm for CS230 (Virtual Reality and Intera
 * Multi-thread rendering
 * load .obj model
 * Anti-aliasing
-* Simple texture mapping
+* Simple texture mapping on plane
 
 ## System requirement
 Ubuntu v14.04+
@@ -43,13 +43,19 @@ cd bin
 	* run with
 			
 			./RayTracing -MCPT true
-	
+2. Twist with ball
+	* Global Illumination with Monte Carlo Path Tracing
+	* with **color bleeding**, **soft shadow** effects
+	* all diffuse surfaces are Lambertian surfaces
+	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 11958.08s
+		
+		![]()
 ## Reference
 * https://www.scratchapixel.com/
 * http://www.flipcode.com/archives/Raytracing_Topics_Techniques-Part_1_Introduction.shtml
 * Shirley, P., & Morley, R. K. (2008). Realistic ray tracing. AK Peters, Ltd..
 
 ## TODOs
-* [ ] Texture
+* [x] Texture
 * [ ] bounding box speed up
 

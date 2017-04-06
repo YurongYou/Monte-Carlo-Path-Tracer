@@ -7,7 +7,7 @@
 
 #define EPSILON			    0.001f
 
-#define SAMPLE_AREA_LIGHT   32
+#define SAMPLE_AREA_LIGHT   16
 #define PI	                3.141592653589793238462f
 
 #define RAY_TRACING_WITH_CAST   0
