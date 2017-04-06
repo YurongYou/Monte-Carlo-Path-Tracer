@@ -148,7 +148,7 @@ private:
 class Mesh : public Object{
 friend class MeshTriangle;
 public:
-    Mesh(const string &name, const std::string file);
+    Mesh(const string &name, const std::string file, const TraceConfig& config);
 
     IntersectResult intersect(const Ray &ray) const override;
 

@@ -294,13 +294,13 @@ void Engine::drawPicture(const Color* canvas) {
 
 void Engine::render(TraceConfig& config) {
     if (config.test == "twist_mesh"){
-        scene->castTest("../models/twist.obj");
+        scene->castTest("../models/twist.obj", config);
     } else if (config.test == "teapot_mesh"){
-        scene->castTest("../models/teapot.obj");
+        scene->castTest("../models/teapot.obj", config);
     } else if (config.test == "mix_twist_mesh"){
-        scene->MixTest("../models/twist.obj");
+        scene->MixTest("../models/twist.obj", config);
     } else if (config.test == "load_obj"){
-        scene->ObjTest(config.obj);
+        scene->ObjTest(config.obj, config);
     } else if (config.test == "simple"){
         scene->simpleTest();
     }

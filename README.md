@@ -78,7 +78,11 @@ cd bin
 			
 			./RayTracing -MCPT true -test_case mix_twist_mesh -view 2 4 -12 2 4 0
 			
-			
+3. Box with teapot
+	* run with
+		
+			./RayTracing -MCPT true -test_case load_obj -obj ../models/teapot2.obj -meshtype 0.0 0.8 1.0 -sample_num 2
+
 ## Further Possible Improvements
 * MCPT with direct ray casting
 * KD-tree speedup

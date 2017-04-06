@@ -5,7 +5,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    Engine::TraceConfig config;
+    TraceConfig config;
     int i = 1;
     float fx = 0, fy = 4, fz = -10;
     float tx = 0, ty = 4, tz = 0;
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
             ++i;
             if (strncmp(argv[i], "true", 4) == 0){
                 config.illumination_type = PURE_MCPT;
-                config.sample_num = 1;
+                config.sample_num = 1024;
             }
             else if (strncmp(argv[i], "mix", 3) ==0 ){
                 config.illumination_type = MIX;
@@ -52,6 +52,17 @@ int main(int argc, char *argv[]) {
         else if (strncmp(argv[i], "-obj", 4) == 0){
             ++i;
             config.obj = argv[i];
+        }
+        else if (strncmp(argv[i], "-meshtype", 9) == 0){
+            ++i;
+            config.mesh_diff = std::stof(argv[i]);
+            ++i;
+            config.mesh_ks = std::stof(argv[i]);
+            ++i;
+            config.mesh_refl = std::stof(argv[i]);
+        } else if (strncmp(argv[i], "-sample_num", 10) == 0){
+            ++i;
+            config.sample_num = std::stoi(argv[i]);
         }
         ++i;
     }

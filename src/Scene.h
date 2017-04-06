@@ -15,9 +15,9 @@ class Scene {
 public:
     void CornellBox();
     void simpleTest();
-    void castTest(std::string file);
-    void MixTest(std::string file);
-    void ObjTest(std::string file);
+    void castTest(std::string file, const TraceConfig& config);
+    void MixTest(std::string file, const TraceConfig& config);
+    void ObjTest(std::string file, const TraceConfig& config);
     const ObjectList &getObject_list() const {
         return object_list;
     }

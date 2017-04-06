@@ -69,7 +69,7 @@ void Scene::CornellBox(){
     addObject(new Sphere(sphere_material, "transparent sphere", VecF(1.7f, -1.0f, 1.0f), radius2));
 }
 
-void Scene::castTest(std::string file){
+void Scene::castTest(std::string file, const TraceConfig& config){
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
@@ -114,11 +114,11 @@ void Scene::castTest(std::string file){
 //    float radius1 = 1.0f;
 //    addObject(new Sphere(sphere_material, "refractive sphere",
 //                         VecF(0,0,4), radius1));
-    addObject(new Mesh("mesh", file));
+    addObject(new Mesh("mesh", file, config));
 //    ObjLoader::loadObj(file, *this);
 }
 
-void Scene::MixTest(std::string file) {
+void Scene::MixTest(std::string file, const TraceConfig& config) {
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
@@ -171,10 +171,10 @@ void Scene::MixTest(std::string file) {
                          VecF(5, low + radius1, -2), radius1));
 
 
-    addObject(new Mesh("mesh", file));
+    addObject(new Mesh("mesh", file, config));
 }
 
-void Scene::ObjTest(std::string file) {
+void Scene::ObjTest(std::string file, const TraceConfig& config) {
     if (!object_list.empty() || !light_list.empty()) {
         object_list.clear();
         light_list.clear();
@@ -227,7 +227,7 @@ void Scene::ObjTest(std::string file) {
 //                         VecF(5, low + radius1, -2), radius1));
 //
 //
-    addObject(new Mesh("mesh", file));
+    addObject(new Mesh("mesh", file, config));
 }
 
 

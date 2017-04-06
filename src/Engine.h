@@ -13,19 +13,6 @@
 
 class Engine {
 public:
-    struct TraceConfig {
-        int num_worker = 4;
-        int num_trace_depth = 5;
-        int illumination_type = RAY_TRACING_WITH_CAST;
-        int sub_pixel = 2;
-        int sample_num = 1;
-        int diffuse_sample_num = 32;
-        std::string test;
-        std::string obj = "../models/twist.obj";
-
-        TraceConfig() {}
-    };
-
     struct TraceResult {
         Color color;
         const Object* hit_object;

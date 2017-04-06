@@ -183,7 +183,7 @@ Color AABB::getColor(const VecF &pos) const {
 
 #define LINE_MAX_LEN 1000
 
-Mesh::Mesh(const string &name, const std::string file) : Object(Material(), name) {
+Mesh::Mesh(const string &name, const std::string file, const TraceConfig& config) : Object(Material(), name) {
     // load .obj file
     std::ifstream fin(file);
     if (!fin.is_open()) {
@@ -194,9 +194,9 @@ Mesh::Mesh(const string &name, const std::string file) : Object(Material(), name
     int count_face = 0;
     std::vector<int> count_normal;
     Material triangle_material = Material();
-    triangle_material.setDiffuse_prob(0.0f);
-    triangle_material.setReflection_prob(1.0f);
-    triangle_material.setKs(0.8f);
+    triangle_material.setDiffuse_prob(config.mesh_diff);
+    triangle_material.setReflection_prob(config.mesh_refl);
+    triangle_material.setKs(config.mesh_ks);
     triangle_material.setIntrinsic_color( CYAN );
     // null point (to deal with the 1-base problem)
     count_normal.push_back(0);
