@@ -21,6 +21,7 @@ public:
         int sample_num = 1;
         int diffuse_sample_num = 32;
         std::string test;
+        std::string obj = "../models/twist.obj";
 
         TraceConfig() {}
     };

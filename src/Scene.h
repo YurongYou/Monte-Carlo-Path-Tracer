@@ -17,6 +17,7 @@ public:
     void simpleTest();
     void castTest(std::string file);
     void MixTest(std::string file);
+    void ObjTest(std::string file);
     const ObjectList &getObject_list() const {
         return object_list;
     }

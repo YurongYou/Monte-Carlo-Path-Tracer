@@ -76,8 +76,14 @@ cd bin
 		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_texture_obj.jpg)
 	* run with
 			
-			./RayTracing -MCPT true -test_case mix_twist_mesh
+			./RayTracing -MCPT true -test_case mix_twist_mesh -view 2 4 -12 2 4 0
 			
+			
+## Further Possible Improvements
+* MCPT with direct ray casting
+* KD-tree speedup
+* texture mapping on .obj 3D model
+
 ## Reference
 * https://www.scratchapixel.com/
 * http://www.flipcode.com/archives/Raytracing_Topics_Techniques-Part_1_Introduction.shtml
@@ -87,4 +93,5 @@ cd bin
 ## TODOs
 * [x] Texture
 * [x] bounding box speed up
+
 

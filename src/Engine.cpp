@@ -298,7 +298,9 @@ void Engine::render(TraceConfig& config) {
     } else if (config.test == "teapot_mesh"){
         scene->castTest("../models/teapot.obj");
     } else if (config.test == "mix_twist_mesh"){
-        scene->MixTest("../models/sphere.obj");
+        scene->MixTest("../models/twist.obj");
+    } else if (config.test == "load_obj"){
+        scene->ObjTest(config.obj);
     } else if (config.test == "simple"){
         scene->simpleTest();
     }

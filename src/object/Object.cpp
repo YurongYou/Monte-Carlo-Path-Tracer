@@ -194,7 +194,8 @@ Mesh::Mesh(const string &name, const std::string file) : Object(Material(), name
     int count_face = 0;
     std::vector<int> count_normal;
     Material triangle_material = Material();
-    triangle_material.setDiffuse_prob(1.0f);
+    triangle_material.setDiffuse_prob(0.0f);
+    triangle_material.setReflection_prob(1.0f);
     triangle_material.setKs(0.8f);
     triangle_material.setIntrinsic_color( CYAN );
     // null point (to deal with the 1-base problem)

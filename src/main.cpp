@@ -7,8 +7,8 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Engine::TraceConfig config;
     int i = 1;
-    float fx = 2, fy = 4, fz = -12;
-    float tx = 2, ty = 4, tz = 0;
+    float fx = 0, fy = 4, fz = -10;
+    float tx = 0, ty = 4, tz = 0;
     int image_height = 480;
     int image_width = 640;
     while (i < argc){
@@ -16,24 +16,24 @@ int main(int argc, char *argv[]) {
             ++i;
             if (strncmp(argv[i], "true", 4) == 0){
                 config.illumination_type = PURE_MCPT;
-                config.sample_num = 1024;
+                config.sample_num = 1;
             }
             else if (strncmp(argv[i], "mix", 3) ==0 ){
                 config.illumination_type = MIX;
                 config.diffuse_sample_num = 32;
             }
         }
-        if (strncmp(argv[i], "-test_case", 10) == 0){
+        else if (strncmp(argv[i], "-test_case", 10) == 0){
             ++i;
             config.test = argv[i];
         }
-        if (strncmp(argv[i], "-size", 6) == 0){
+        else if (strncmp(argv[i], "-size", 6) == 0){
             ++i;
             image_height = std::stoi(argv[i]);
             ++i;
             image_width = std::stoi(argv[i]);
         }
-        if (strncmp(argv[i], "-view", 6) == 0){
+        else if (strncmp(argv[i], "-view", 6) == 0){
             // from
             ++i;
             fx = std::stoi(argv[i]);
@@ -48,6 +48,10 @@ int main(int argc, char *argv[]) {
             ty = std::stoi(argv[i]);
             ++i;
             tz = std::stoi(argv[i]);
+        }
+        else if (strncmp(argv[i], "-obj", 4) == 0){
+            ++i;
+            config.obj = argv[i];
         }
         ++i;
     }
