@@ -16,8 +16,8 @@ An implementation on realistic ray tracing algorithm for CS230 (Virtual Reality 
 * Simple bounding box speed up
 
 ## System requirement
-Ubuntu v14.04+
-CMake v3.2.2+
+* Ubuntu v14.04+
+* CMake v3.2.2+
 
 ## Project Structure
 ```
@@ -57,7 +57,7 @@ cd bin
 * The default size of the rendered image is `640x480`, and if specified in cli options, `height / width` should be `3 / 4`.
 * To display a .obj 3D model, please run with
 		
-		`-test_case load_obj -obj <path of .obj file>`
+		-test_case load_obj -obj <path of .obj file>
 
 
 ## Demos
