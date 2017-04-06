@@ -69,9 +69,9 @@ cd bin
 	* with **color bleeding**, **soft shadow** effects
 	* .obj 3D model (the twist)
 	* all diffuse surfaces are Lambertian surfaces
-	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 11958.08s
+	* render with Intel(R) Xeon(R) CPU E5-2680 v4 @ 2.40GHz (46 cores) in 6422.3s
 		
-		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_with_obj.jpg)
+		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_with_obj_2.jpg)
 	* run with
 			
 			./RayTracing -MCPT true -test_case mix_twist_mesh
