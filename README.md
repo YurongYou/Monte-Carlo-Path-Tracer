@@ -92,6 +92,9 @@ cd bin
 	* .obj 3D model (the teapot) (more meshes), with [phong shading](https://en.wikipedia.org/wiki/Phong_shading)
 	* all diffuse surfaces are Lambertian surfaces
 	* texture mapping (the ground and the back wall)
+		
+		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_teapot.jpg)
+		
 	* run with
 		
 			./RayTracing -MCPT true -test_case load_obj -obj ../models/teapot2.obj -meshtype 0.0 0.8 1.0
