@@ -1,4 +1,5 @@
 # MCPT Ray Tracer
+![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_teapot_2.jpg)
 An implementation on realistic ray tracing algorithms for CS230 (Virtual Reality and Interactive 3D Graphics Display).
 
 
@@ -100,7 +101,7 @@ cd bin
 		
 	* run with
 		
-			./RayTracing -MCPT true -test_case load_obj -obj ../models/teapot2.obj -meshtype 0.0 0.8 1.0
+			./RayTracing -MCPT true -test_case load_obj -obj ../models/teapot2.obj -meshtype 0.0 0.0 1.0
 
 ## Further Possible Improvements
 * MCPT with direct ray casting
