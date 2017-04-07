@@ -99,7 +99,7 @@ cd bin
 ## Further Possible Improvements
 * MCPT with direct ray casting
 * KD-tree speedup
-* texture mapping on .obj 3D model
+* texture mapping on .obj 3D models
 
 ## Reference
 * https://www.scratchapixel.com/
