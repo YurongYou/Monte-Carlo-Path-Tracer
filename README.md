@@ -67,6 +67,7 @@ cd bin
     * Global Illumination with Monte Carlo Path Tracing
     * with **color bleeding**, **transparent object**, **reflective object**, **soft shadow** and **caustic** effects
     * all diffuse surfaces are [Lambertian surfaces](https://en.wikipedia.org/wiki/Lambertian_reflectance)
+    * size 1280x960, 4x4 subpixel, 512 sample per subpixel
     * render with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (20 cores) in 5731.2s
     
     	![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_MCPT_highres.jpg?token=AM-ptWp2Mz87K9diVOlomkYMJkU9ndcRks5Y7ujlwA%3D%3D)
@@ -92,6 +93,8 @@ cd bin
 	* .obj 3D model (the teapot) (more meshes), with [phong shading](https://en.wikipedia.org/wiki/Phong_shading)
 	* all diffuse surfaces are Lambertian surfaces
 	* texture mapping (the ground and the back wall)
+	* size 1280x960, 2x2 subpixel, 1024 sample per subpixel
+	* render with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (56 cores) in 13788.39s
 		
 		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_teapot.jpg)
 		
