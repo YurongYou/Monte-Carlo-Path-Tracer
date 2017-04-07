@@ -96,7 +96,7 @@ cd bin
 	* size 1280x960, 2x2 subpixel, 1024 sample per subpixel
 	* render with Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz (56 cores) in 13788.39s
 		
-		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_teapot.jpg)
+		![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_teapot_2.jpg)
 		
 	* run with
 		
