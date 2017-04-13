@@ -1,6 +1,6 @@
-# MCPT Ray Tracer
+# Monte Carlo Path Tracer
 ![](https://raw.githubusercontent.com/YurongYou/RayTracing/master/results/render_image_teapot_2.jpg)
-An implementation on realistic ray tracing algorithms for CS230 (Virtual Reality and Interactive 3D Graphics Display).
+A realistic Monte Carlo Path Tracer project for CS230 (Virtual Reality and Interactive 3D Graphics Display).
 
 
 ## Features
